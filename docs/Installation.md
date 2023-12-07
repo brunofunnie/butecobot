@@ -58,6 +58,10 @@ Now let's get the Bot Token to be used by the Bot application. Navigate to [Deve
 
 ![](https://github.com/brunofunnie/chorumebot/blob/main/docs/images/6.png?raw=true)
 
+Enable `PRESENCE INTENT` and `SERVER MEMBERS INTENT` and `MESSAGE CONTENT INTENT`
+
+![](https://github.com/brunofunnie/chorumebot/blob/main/docs/images/7.png?raw=true)
+
 You almost there, now let's run the docker containers, now navigate to the **docker** directory and type:
 
 	docker compose up -d
@@ -68,7 +72,7 @@ You can check if all the containers are running by using:
 
 You should see something similar to:
 
-![](https://github.com/brunofunnie/chorumebot/blob/main/docs/images/7.png?raw=true)
+![](https://github.com/brunofunnie/chorumebot/blob/main/docs/images/8.png?raw=true)
 
 For the next commands you'll need to be in the top level of this repository. The .env copied from the example already contain the default credentials for the dev environment so you'll only need to run the migrations. For that you'll need to:
 
