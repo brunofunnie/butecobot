@@ -48,6 +48,6 @@ class TopForbesCommand extends Command
                 ['name' => 'Usuário', 'value' => $users, 'inline' => true],
                 ['name' => 'Acumulado', 'value' => $acc, 'inline' => true],
             ]
-        ), true);
+        ), false);
     }
 }
