@@ -118,6 +118,10 @@ return [
                         [
                             'name' => 'Libertadores',
                             'value' => 'LIBERTADORES'
+                        ],
+                        [
+                            'name' => 'Zoeira',
+                            'value' => 'ZOEIRA'
                         ]
                     ]
                 ],

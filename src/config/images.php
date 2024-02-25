@@ -16,6 +16,7 @@ return [
             'UFC' => 'https://chorume.tech/imgs/ufc.gif?v0.0.1',
             'GENERIC' => 'https://chorume.tech/imgs/upcomingevents.gif?v0.0.1',
             'LIBERTADORES' => 'https://chorume.tech/imgs/libertadores.gif?v0.0.1',
+            'ZOEIRA' => 'https://chorume.tech/imgs/luta_zoeira.gif?v0.0.1',
         ],
         'place_bet' => 'https://chorume.tech/imgs/placebet.gif?v0.0.1',
         'top_forbes' => 'https://chorume.tech/imgs/forbes_chorume.png?v0.0.2',
