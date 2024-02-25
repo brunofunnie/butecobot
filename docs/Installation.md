@@ -76,7 +76,7 @@ You should see something similar to:
 
 Before you can install the PHP packages and run the migrations let's create our database that will receive the migrations. Navigate to the PHPMyAdmin, log in it and create a database called:
 
-	chorume_coins
+	chorumebot
 
 I would choose **utf8mb4_general_ci** for the collation. But feel free to choose the one you like, just remember it will influence in the sorting of things for example.
 

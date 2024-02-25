@@ -134,9 +134,17 @@ class FinishCommand extends Command
         $loop->addTimer(6, function () use ($interaction, $roulette) {
             $rouletteId = $roulette[0]['id'];
             $followUpMessageId = $this->redis->get("roulette:{$rouletteId}:lastfollowup");
-            // $winnerNumber = rand(0, 14);
-            $numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 11, 12, 13, 14];
+
+            // Inicia os números de 1 a 14
+            $numbers = [];
+            for ($i = 1; $i <= 14; $i++) $numbers[] = $i;
+            
+            // Adicionando o número 0 (branco)
+            $numbers[] = 0;
+            
+            // Sorteia o número dentro do array
             $winnerNumber = array_rand($numbers);
+            
             $winnerResult = null;
             $choice = null;
 
