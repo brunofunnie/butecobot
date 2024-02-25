@@ -153,12 +153,18 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
 
     // Presence in beta testing
     // Members are not getting updated when they leave the voice channel
-    // if ($_ENV['PRESENCE_EXTRA_COINS_ENABLE'] === 1) {
+    // echo "Presence in beta testing" . PHP_EOL;
+
+    // if ($_ENV['PRESENCE_EXTRA_COINS_ENABLE'] == 1) {
+    //     echo "Presence enabled" . PHP_EOL;
     //     $presenceChannels = explode(',', getenv('PRESENCE_EXTRA_COINS_CHANNELS'));
     //     $loop = $discord->getLoop();
     //     $loop->addPeriodicTimer($_ENV['PRESENCE_EXTRA_COINS_CHECK_TIME'], function () use ($discord, $presenceChannels, $redis, $userRepository) {
+    //         echo "Presence check!" . PHP_EOL;
+
     //         foreach ($presenceChannels as $channelId) {
     //             $channel = $discord->getChannel($channelId);
+    //             echo "=================================" . PHP_EOL;
 
     //             if (!$channel->isVoiceBased()) {
     //                 continue;
@@ -174,6 +180,8 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
     //                 if ($member['user']->bot) {
     //                     continue;
     //                 }
+
+    //                 var_dump(array_column($presenceList, 'username'));
 
     //                 $found = array_search($member['user']->id, array_column($presenceList, 'id'));
 
@@ -198,10 +206,10 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
     //                     if ($presenceDiff >= $_ENV['PRESENCE_EXTRA_COINS_WIN_TIME']) {
     //                         $presenceList[$found]->presence = time();
 
-    //                         $discord->getLogger()->debug('User ' . $member['user']->global_name . ' presence diff: ' . $presenceDiff);
+    //                         // $discord->getLogger()->debug('User ' . $member['user']->global_name . ' presence diff: ' . $presenceDiff);
 
     //                         if (!$member->self_deaf) {
-    //                             $discord->getLogger()->debug('User received extra coins: ' . $member['user']->global_name);
+    //                             // $discord->getLogger()->debug('User received extra coins: ' . $member['user']->global_name);
     //                             $presenceList[$found]->accumulated += $_ENV['PRESENCE_EXTRA_COINS_AMOUNT'];
     //                             $presenceNewList[] = $presenceList[$found];
     //                             $userRepository->giveCoins($member['user']->id, $_ENV['PRESENCE_EXTRA_COINS_AMOUNT'], 'Presence', json_encode($presenceList[$found]));

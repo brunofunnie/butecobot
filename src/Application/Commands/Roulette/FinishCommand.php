@@ -135,16 +135,11 @@ class FinishCommand extends Command
             $rouletteId = $roulette[0]['id'];
             $followUpMessageId = $this->redis->get("roulette:{$rouletteId}:lastfollowup");
 
-            // Inicia os números de 1 a 14
-            $numbers = [];
-            for ($i = 1; $i <= 14; $i++) $numbers[] = $i;
-            
-            // Adicionando o número 0 (branco)
-            $numbers[] = 0;
-            
-            // Sorteia o número dentro do array
+            $numbers = range(0, 14);
+            shuffle($numbers);
+            shuffle($numbers);
             $winnerNumber = array_rand($numbers);
-            
+
             $winnerResult = null;
             $choice = null;
 
