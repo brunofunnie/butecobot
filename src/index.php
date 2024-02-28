@@ -43,7 +43,13 @@ use Chorume\Application\Commands\Roulette\ExposeCommand as RouletteExposeCommand
 use Chorume\Application\Commands\Roulette\FinishCommand as RouletteFinishCommand;
 use Chorume\Application\Commands\Roulette\ListCommand as RouletteListCommand;
 use Chorume\Application\Commands\Test\TestCommand;
+use Chorume\Application\Events\Event as EventsEvent;
 use Chorume\Application\Events\MessageCreate;
+use Discord\Parts\Channel\Channel;
+use Discord\Parts\Guild\Guild;
+use Discord\Parts\WebSockets\VoiceStateUpdate as WebSocketsVoiceStateUpdate;
+use Discord\Repository\UserRepository;
+use Discord\WebSockets\Events\VoiceStateUpdate;
 
 $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -109,7 +115,50 @@ $rouletteRepository = new Roulette($db);
 $rouletteBetRepository = new RouletteBet($db);
 $talkRepository = new Talk($db);
 
-$discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
+$users_voice_join = array();
+
+$discord->on(DiscordEvent::VOICE_STATE_UPDATE, function (WebSocketsVoiceStateUpdate $data, Discord $discord) use (&$users_voice_join, $userRepository) {
+    $channel = $data->channel;
+    $user = $data->user;
+    $user_is_deaf = $data->self_deaf || $data->deaf;
+
+    // reset the entry time in case we find previous data to prevent glitches
+    $foundPreviousUserData = false;
+    foreach ($users_voice_join as $key => $value) {
+        if ($value["id"] === $user->id) {
+            $foundPreviousUserData = true;
+            $value["entry_time"] = time();
+        }
+    }
+
+    // if the user is not in the cache, we add it
+    if (!$foundPreviousUserData) {
+        array_push($users_voice_join, [
+            'id' => $user->id,
+            'entry_time' => time(),
+        ]);
+    }
+
+    // if the user left a channel or is deaf, we remove it from the cache and pay their coins if he was there for more than 1 minute
+    if ($channel == null || $user_is_deaf) {
+        foreach ($users_voice_join as $key => $value) {
+            if ($value["id"] === $user->id) {
+                $entry_time = $value["entry_time"];
+                $elapsed_seconds = (time() - $entry_time);
+
+                if ($elapsed_seconds >= 60) {
+                    $userRepository->giveCoins($user->id, $elapsed_seconds / 10, 'Call', "Coins por ficar " . $elapsed_seconds . " segundos em call");
+                    echo $user->username . " received " . $elapsed_seconds / 10 . " coins for staying " . $elapsed_seconds . " seconds in call" . PHP_EOL;
+                }
+
+                unset($users_voice_join[$key]);
+            }
+        }
+        return;
+    }
+});
+
+$discord->on('init', function (Discord $discord) use ($userRepository, $redis, &$users_voice_join) {
     // Initialize application commands
     $initializeCommandsFiles = glob(__DIR__ . '/Application/Initialize/*Command.php');
 
@@ -119,6 +168,25 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
         $command = new Command($discord, $initializeCommand);
         $discord->application->commands->save($command);
     }
+
+    /*
+        This fetches all the voice channels in the guild and adds their users to the voice channel cache 
+        in order to give them coins for staying in the voice channel
+    */
+    $discord->guilds->fetch($_ENV['GUILD_ID'])->done(function (Guild $guild) use (&$users_voice_join, $discord) {
+        foreach ($guild->channels as $channel) {
+            if (!$channel->type == Channel::TYPE_GUILD_VOICE) return;
+            $members_on_voice = $discord->getChannel($channel->id)->members->toArray();
+
+            foreach ($members_on_voice as $member) {
+                echo $member->member->user->username . " was not in the voice channel cache, and was added now " . PHP_EOL;
+                array_push($users_voice_join, [
+                    'id' => $member->member->user->id,
+                    'entry_time' => time(),
+                ]);
+            }
+        }
+    });
 
     // DRINK_WATER_REMEMBER_ENABLE=1
     // DRINK_WATER_INTERVAL=3600
