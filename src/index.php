@@ -115,7 +115,7 @@ $rouletteRepository = new Roulette($db);
 $rouletteBetRepository = new RouletteBet($db);
 $talkRepository = new Talk($db);
 
-$users_voice_join = array();
+$users_voice_join = [];
 
 $discord->on(DiscordEvent::VOICE_STATE_UPDATE, function (WebSocketsVoiceStateUpdate $data, Discord $discord) use (&$users_voice_join, $userRepository) {
     $channel = $data->channel;
