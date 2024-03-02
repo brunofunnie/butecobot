@@ -8,7 +8,7 @@ WORKDIR /app
 
 RUN apt-get update -y \
     && apt-get install -y \
-        busybox gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 dnsutils iputils-ping telnet \
+        dnsutils iputils-ping telnet procps busybox gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3  \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
@@ -21,7 +21,7 @@ RUN apt-get update -y \
         libgmp-dev \
         libsodium-dev \
         libuv1-dev \
-        ffmpeg
+        ffmpeg \
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure intl \
@@ -33,8 +33,8 @@ RUN apt-get update -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN groupadd --force -g $WWWGROUP raft
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 raft
+RUN groupadd --force -g 1000 raft
+RUN useradd -ms /bin/bash --no-user-group -g raft -u 1000 raft
 
 RUN chown -R raft:raft /app && chmod -R 755 /app
 

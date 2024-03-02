@@ -1,51 +1,68 @@
-version: '3.5'
-
 services:
+  chorumebot:
+    container_name: chorumebot-app
+    build:
+      context: ./docker
+      dockerfile: web.dockerfile
+    volumes:
+      - ./:/app
+    # command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+    networks:
+      chorumebot:
+
   mysql:
     container_name: chorumebot-mysql
     image: mysql:8.1.0
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=chorume_coins
-      - MYSQL_USER=application
-      - MYSQL_PASSWORD=application
+      - MYSQL_DATABASE=chorumebot
+      - MYSQL_USER=chorumebot
+      - MYSQL_PASSWORD=chorumebot
     volumes:
-      - ./app_mysql:/var/lib/mysql
+      - mysql:/var/lib/mysql
       - ./docker/confs/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+       chorumebot:
 
   pma:
     container_name: chorumebot-pma
     image: phpmyadmin
     ports:
-      - "8081:80"
+      - 8081:80
     environment:
       - PMA_ARBITRARY=1
       - MEMORY_LIMIT=2048M
       - UPLOAD_LIMIT=2048M
+    networks:
+       chorumebot:
 
   redis:
     container_name: chorumebot-redis
     image: redis:7.2.0-alpine
     ports:
-      - "6379:6379"
+      - 6379:6379
     command: redis-server --save 20 1 --loglevel warning --requirepass redis
     volumes:
-      - app_redis:/data
+      - redis:/data
+    networks:
+       chorumebot:
 
   mpit:
     container_name: chorumebot-mailpit
     image: axllent/mailpit
     ports:
-      - "8025:8025"
-      - "1025:1025"
+      - 8025:8025
+      - 1025:1025
     environment:
       - TZ=America/Sao_Paulo
+    networks:
+       chorumebot:
+
 networks:
-  dbot:
-    driver: bridge
+  chorumebot:
 
 volumes:
-  app_mysql:
-  app_redis:
+  mysql:
+  redis:
