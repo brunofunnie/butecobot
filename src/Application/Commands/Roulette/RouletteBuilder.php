@@ -79,8 +79,7 @@ class RouletteBuilder
             ->setLabel("R +{$amountBet}")
             ->setListener(
                 function (Interaction $interactionUser)
-                use ($interaction, $rouletteId, $roulette, $amountBet, &$gameData)
-                {
+                use ($interaction, $rouletteId, $roulette, $amountBet, &$gameData) {
                     $fromDiscordId = $interactionUser->member->user->id;
                     $userDiscord = $interactionUser->member->user;
 
@@ -103,8 +102,7 @@ class RouletteBuilder
             ->setLabel("G +{$amountBet}")
             ->setListener(
                 function (Interaction $interactionUser)
-                use ($interaction, $rouletteId, $roulette, $amountBet, &$gameData)
-                {
+                use ($interaction, $rouletteId, $roulette, $amountBet, &$gameData) {
                     $fromDiscordId = $interactionUser->member->user->id;
                     $userDiscord = $interactionUser->member->user;
 
@@ -127,8 +125,7 @@ class RouletteBuilder
             ->setLabel("BL +{$amountBet}")
             ->setListener(
                 function (Interaction $interactionUser)
-                use ($interaction, $rouletteId, $roulette, $amountBet, &$gameData)
-                {
+                use ($interaction, $rouletteId, $roulette, $amountBet, &$gameData) {
                     $fromDiscordId = $interactionUser->member->user->id;
                     $userDiscord = $interactionUser->member->user;
 
@@ -150,8 +147,7 @@ class RouletteBuilder
         $buttonSpin = Button::new(Button::STYLE_PRIMARY)
             ->setLabel("Girar")
             ->setListener(
-                function (Interaction $interactionUser) use ($rouletteId)
-                {
+                function (Interaction $interactionUser) use ($rouletteId) {
                     $roulette = $this->rouletteRepository->getRouletteById($rouletteId);
                     $status = (int) $roulette[0]['status'];
 
@@ -304,9 +300,10 @@ class RouletteBuilder
             ))
             ->setFooter("Últimos giros:\n" . $this->buildLastRoulettesChoices());
 
-        $embed->addFieldValues('🟥 RED 2x', '', true)
-            ->addFieldValues('🟩 GREEN 14x', '', true)
-            ->addFieldValues('⬛ BLACK 2x', '', true);
+        $embed
+            ->addFieldValues(sprintf("🟥 RED %sx", Roulette::RED_MULTIPLIER),'', true)
+            ->addFieldValues(sprintf("🟩 GREEN  %sx", Roulette::GREEN_MULTIPLIER), '', true)
+            ->addFieldValues(sprintf("⬛ BLACK  %sx", Roulette::BLACK_MULTIPLIER), '', true);
 
         $embed->addFieldValues(
             '',
@@ -340,7 +337,9 @@ class RouletteBuilder
         $lastRoulettes = $this->rouletteRepository->listEventsPaid(15);
 
         $choices = array_map(function ($arr) {
-            return match ($arr['choice']) {
+            $result = $this->rouletteRepository->getWinnerChoiceByNumber($arr['result']);
+
+            return match ($result['choice']) {
                 Roulette::RED => "🟥",
                 Roulette::GREEN => "🟩",
                 Roulette::BLACK => "⬛",

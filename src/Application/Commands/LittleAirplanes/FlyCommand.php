@@ -133,7 +133,7 @@ class FlyCommand extends Command
 
                 // Little Airplanes Sound
                 $channel = $this->discord->getChannel($interaction->channel_id);
-                $audio = __DIR__ . '/../../../Audio/avioeszinhos.mp3';
+                $audio = __DIR__ . '/../../../Assets/Sounds/avioeszinhos.mp3';
                 $voice = $this->discord->getVoiceClient($channel->guild_id);
 
                 if ($channel->isVoiceBased()) {

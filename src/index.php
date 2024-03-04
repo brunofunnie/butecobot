@@ -1,7 +1,6 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-require 'Helpers/FindHelper.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use Predis\Client as RedisClient;
@@ -43,13 +42,11 @@ use Chorume\Application\Commands\Roulette\ExposeCommand as RouletteExposeCommand
 use Chorume\Application\Commands\Roulette\FinishCommand as RouletteFinishCommand;
 use Chorume\Application\Commands\Roulette\ListCommand as RouletteListCommand;
 use Chorume\Application\Commands\Test\TestCommand;
-use Chorume\Application\Events\Event as EventsEvent;
 use Chorume\Application\Events\MessageCreate;
+use Chorume\Application\Events\GuildMemberUpdate;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Guild\Guild;
 use Discord\Parts\WebSockets\VoiceStateUpdate as WebSocketsVoiceStateUpdate;
-use Discord\Repository\UserRepository;
-use Discord\WebSockets\Events\VoiceStateUpdate;
 
 $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -115,16 +112,16 @@ $rouletteRepository = new Roulette($db);
 $rouletteBetRepository = new RouletteBet($db);
 $talkRepository = new Talk($db);
 
-$users_voice_join = [];
+$voiceUsersJoined = [];
 
-$discord->on(DiscordEvent::VOICE_STATE_UPDATE, function (WebSocketsVoiceStateUpdate $data, Discord $discord) use (&$users_voice_join, $userRepository) {
+$discord->on(DiscordEvent::VOICE_STATE_UPDATE, function (WebSocketsVoiceStateUpdate $data, Discord $discord) use (&$voiceUsersJoined, $userRepository) {
     $channel = $data->channel;
     $user = $data->user;
-    $user_is_deaf = $data->self_deaf || $data->deaf;
+    $isUserDeafened = $data->self_deaf || $data->deaf;
 
     // reset the entry time in case we find previous data to prevent glitches
     $foundPreviousUserData = false;
-    foreach ($users_voice_join as $key => $value) {
+    foreach ($voiceUsersJoined as $key => $value) {
         if ($value["id"] === $user->id) {
             $foundPreviousUserData = true;
             $value["entry_time"] = time();
@@ -133,32 +130,40 @@ $discord->on(DiscordEvent::VOICE_STATE_UPDATE, function (WebSocketsVoiceStateUpd
 
     // if the user is not in the cache, we add it
     if (!$foundPreviousUserData) {
-        array_push($users_voice_join, [
+        array_push($voiceUsersJoined, [
             'id' => $user->id,
             'entry_time' => time(),
         ]);
     }
 
     // if the user left a channel or is deaf, we remove it from the cache and pay their coins if he was there for more than 1 minute
-    if ($channel == null || $user_is_deaf) {
-        foreach ($users_voice_join as $key => $value) {
+    if ($channel == null || $isUserDeafened) {
+        foreach ($voiceUsersJoined as $key => $value) {
             if ($value["id"] === $user->id) {
                 $entry_time = $value["entry_time"];
-                $elapsed_seconds = (time() - $entry_time);
+                $elapsedSeconds = (time() - $entry_time);
 
-                if ($elapsed_seconds >= 60) {
-                    $userRepository->giveCoins($user->id, $elapsed_seconds / 10, 'Call', "Coins por ficar " . $elapsed_seconds . " segundos em call");
-                    echo $user->username . " received " . $elapsed_seconds / 10 . " coins for staying " . $elapsed_seconds . " seconds in call" . PHP_EOL;
+                if ($elapsedSeconds >= 60) {
+                    $accumulatedAmount = $elapsedSeconds / 10;
+                    $userRepository->giveCoins($user->id, $accumulatedAmount, 'Presence', "Coins por ficar " . $elapsedSeconds . " segundos em call");
+                    $discord->getLogger()->debug(
+                        sprintf(
+                            "Presence: username: %s - received: %s coins - elapsed seconds: %s",
+                            $user->username,
+                            $accumulatedAmount,
+                            $elapsedSeconds
+                        )
+                    );
                 }
 
-                unset($users_voice_join[$key]);
+                unset($voiceUsersJoined[$key]);
             }
         }
         return;
     }
 });
 
-$discord->on('init', function (Discord $discord) use ($userRepository, $redis, &$users_voice_join) {
+$discord->on('init', function (Discord $discord) use ($userRepository, $redis, &$voiceUsersJoined) {
     // Initialize application commands
     $initializeCommandsFiles = glob(__DIR__ . '/Application/Initialize/*Command.php');
 
@@ -173,125 +178,28 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis, &
         This fetches all the voice channels in the guild and adds their users to the voice channel cache 
         in order to give them coins for staying in the voice channel
     */
-    $discord->guilds->fetch($_ENV['GUILD_ID'])->done(function (Guild $guild) use (&$users_voice_join, $discord) {
+    $discord->guilds->fetch($_ENV['GUILD_ID'])->done(function (Guild $guild) use (&$voiceUsersJoined, $discord) {
         foreach ($guild->channels as $channel) {
             if (!$channel->type == Channel::TYPE_GUILD_VOICE) return;
+
             $members_on_voice = $discord->getChannel($channel->id)->members->toArray();
 
             foreach ($members_on_voice as $member) {
-                echo $member->member->user->username . " was not in the voice channel cache, and was added now " . PHP_EOL;
-                array_push($users_voice_join, [
+                $discord->getLogger()->debug(
+                    sprintf(
+                        "Presence: username: %s - added to voice users joined list",
+                        $member->member->user->username,
+                        time()
+                    )
+                );
+
+                array_push($voiceUsersJoined, [
                     'id' => $member->member->user->id,
                     'entry_time' => time(),
                 ]);
             }
         }
     });
-
-    // DRINK_WATER_REMEMBER_ENABLE=1
-    // DRINK_WATER_INTERVAL=3600
-
-    // update users_coins_history set type = 'RouletteBet' where type = 'BetRoulette'
-    // update users_coins_history set type = 'EventBet' where type = 'Event'
-
-    // $guild = $discord->guilds->first();
-    // echo "asdf";
-    // $guild->members->fetch($_ENV['BOT_ID'])->then(function (Member $member) {
-    //     var_dump($member->channels);
-    // })->done();
-
-    // Little Airplanes Sound
-    // $channel = $discord->getChannel($interaction->channel_id);
-    // $audio = __DIR__ . '/../../../Audio/agua.mp3';
-    // $voice = $discord->getVoiceClient($channel->guild_id);
-
-    // if ($channel->isVoiceBased()) {
-    //     if ($voice) {
-    //         $discord->getLogger()->debug('Voice client already exists, playing Little Airplanes audio...');
-
-    //         $voice->playFile($audio);
-    //     } else {
-    //         $discord->joinVoiceChannel($channel)->done(function (VoiceClient $voice) use ($audio) {
-    //             $discord->getLogger()->debug('Playing Little Airplanes audio...');
-
-    //             $voice->playFile($audio);
-    //         });
-    //     }
-    // }
-
-    // Presence in beta testing
-    // Members are not getting updated when they leave the voice channel
-    // echo "Presence in beta testing" . PHP_EOL;
-
-    // if ($_ENV['PRESENCE_EXTRA_COINS_ENABLE'] == 1) {
-    //     echo "Presence enabled" . PHP_EOL;
-    //     $presenceChannels = explode(',', getenv('PRESENCE_EXTRA_COINS_CHANNELS'));
-    //     $loop = $discord->getLoop();
-    //     $loop->addPeriodicTimer($_ENV['PRESENCE_EXTRA_COINS_CHECK_TIME'], function () use ($discord, $presenceChannels, $redis, $userRepository) {
-    //         echo "Presence check!" . PHP_EOL;
-
-    //         foreach ($presenceChannels as $channelId) {
-    //             $channel = $discord->getChannel($channelId);
-    //             echo "=================================" . PHP_EOL;
-
-    //             if (!$channel->isVoiceBased()) {
-    //                 continue;
-    //             }
-
-    //             $presenceList = json_decode($redis->get('presence:' . $channelId) ?? '[]');
-    //             $presenceNewList = [];
-    //             $membersList = $channel->members->toArray();
-
-    //             foreach ($membersList as $member) {
-    //                 echo $member['user']->global_name . PHP_EOL;
-
-    //                 if ($member['user']->bot) {
-    //                     continue;
-    //                 }
-
-    //                 var_dump(array_column($presenceList, 'username'));
-
-    //                 $found = array_search($member['user']->id, array_column($presenceList, 'id'));
-
-    //                 if ($found === false) {
-    //                     if (!$member->self_deaf) {
-    //                         continue;
-    //                     }
-
-    //                     $discord->getLogger()->debug('User new: ' . $member['user']->global_name);
-    //                     $presenceNewList[] = [
-    //                         'id' => $member['user']->id,
-    //                         'username' => $member['user']->username,
-    //                         'global_name' => $member['user']->global_name,
-    //                         'presence' => time(),
-    //                         'accumulated' => 0,
-    //                     ];
-    //                 } else {
-    //                     $discord->getLogger()->debug('User exists: ' . $member['user']->global_name);
-    //                     $currentPresence = $presenceList[$found]->presence;
-    //                     $presenceDiff = time() - $currentPresence;
-
-    //                     if ($presenceDiff >= $_ENV['PRESENCE_EXTRA_COINS_WIN_TIME']) {
-    //                         $presenceList[$found]->presence = time();
-
-    //                         // $discord->getLogger()->debug('User ' . $member['user']->global_name . ' presence diff: ' . $presenceDiff);
-
-    //                         if (!$member->self_deaf) {
-    //                             // $discord->getLogger()->debug('User received extra coins: ' . $member['user']->global_name);
-    //                             $presenceList[$found]->accumulated += $_ENV['PRESENCE_EXTRA_COINS_AMOUNT'];
-    //                             $presenceNewList[] = $presenceList[$found];
-    //                             $userRepository->giveCoins($member['user']->id, $_ENV['PRESENCE_EXTRA_COINS_AMOUNT'], 'Presence', json_encode($presenceList[$found]));
-    //                         }
-    //                     } else {
-    //                         $presenceNewList[] = $presenceList[$found];
-    //                     }
-    //                 }
-    //             }
-
-    //             $redis->set('presence:' . $channelId, json_encode($presenceNewList));
-    //         }
-    //     });
-    // }
 
     $botStartedAt = date('Y-m-d H:i:s');
 
@@ -304,6 +212,7 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis, &
     echo "         Started at: $botStartedAt                " . PHP_EOL;
 });
 
+$discord->on(DiscordEvent::GUILD_MEMBER_UPDATE, new GuildMemberUpdate($discord, $config, $redis, $userRepository));
 $discord->on(DiscordEvent::MESSAGE_CREATE, new MessageCreate($discord, $config, $redis, $talkRepository));
 $discord->listenCommand('test', new TestCommand($discord, $config, $redis));
 $discord->listenCommand('codigo', new CodeCommand($discord, $config, $redis));

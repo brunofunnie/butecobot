@@ -2,23 +2,23 @@
 
 namespace Chorume\Application\Commands\Roulette;
 
+use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
-use Discord\Builders\Components\ActionRow;
-use Discord\Builders\Components\Button; 
+use Discord\Parts\Embed\Embed;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Voice\VoiceClient;
 use Chorume\Application\Commands\Command;
-use Chorume\Application\Commands\Roulette\CreateCommand;
+use Chorume\Application\Images\RouletteFinishImage;
 use Chorume\Repository\Roulette;
 use Chorume\Repository\RouletteBet;
-use Discord\Parts\Embed\Embed;
 use Chorume\Repository\User;
-use Discord\Parts\Channel\Message;
-use Predis\Client as RedisClient;
+use function Chorume\Helpers\find_role_array;
 
 class FinishCommand extends Command
 {
+    private RouletteFinishImage $rouletteFinishImage;
+
     public function __construct(
         private Discord $discord,
         private $config,
@@ -27,6 +27,7 @@ class FinishCommand extends Command
         private Roulette $rouletteRepository,
         private RouletteBet $rouletteBetRepository
     ) {
+        $this->rouletteFinishImage = new RouletteFinishImage();
     }
 
     public function handle(Interaction $interaction): void
@@ -114,7 +115,7 @@ class FinishCommand extends Command
 
         // Roulette Spinning Sound
         $channel = $this->discord->getChannel($interaction->channel_id);
-        $audio = __DIR__ . '/../../../Audio/roulette.mp3';
+        $audio = __DIR__ . '/../../../Assets/Sounds/roulette.mp3';
 
         $voice = $this->discord->getVoiceClient($channel->guild_id);
 
@@ -140,16 +141,10 @@ class FinishCommand extends Command
             shuffle($numbers);
             $winnerNumber = array_rand($numbers);
 
-            $winnerResult = null;
-            $choice = null;
-
             if ($winnerNumber == 0) {
-                $winnerResult = Roulette::GREEN;
-                $choice = "🟩 G[$winnerNumber]";
-
                 // Brasil Sound
                 $channel = $this->discord->getChannel($interaction->channel_id);
-                $audio = __DIR__ . '/../../../Audio/brasil.mp3';
+                $audio = __DIR__ . '/../../../Assets/Sounds/brasil.mp3';
                 $voice = $this->discord->getVoiceClient($channel->guild_id);
 
                 if ($channel->isVoiceBased()) {
@@ -165,15 +160,11 @@ class FinishCommand extends Command
                         });
                     }
                 }
-            } elseif ($winnerNumber % 2 == 0) {
-                $winnerResult = Roulette::BLACK;
-                $choice = "⬛ BL[$winnerNumber]";
-            } else {
-                $winnerResult = Roulette::RED;
-                $choice = "🟥 R[$winnerNumber]";
             }
 
-            $bets = $this->rouletteRepository->payoutRoulette($roulette[0]['id'], $winnerResult);
+            $choiceData = $this->rouletteRepository->getWinnerChoiceByNumber($winnerNumber);
+
+            $bets = $this->rouletteRepository->payoutRoulette($roulette[0]['id'], $winnerNumber);
             $this->redis->del("roulette:{$rouletteId}");
             $this->redis->del("roulette:{$rouletteId}:lastfollowup");
             $this->redis->del("roulette:{$rouletteId}:spinning");
@@ -183,7 +174,7 @@ class FinishCommand extends Command
                 $interaction->user->id,
                 $rouletteId,
                 $roulette[0]['description'],
-                "{$choice}",
+                "{$choiceData['label']}",
             );
 
             $winnersImage = $this->config['images']['winners'][array_rand($this->config['images']['winners'])];
@@ -198,7 +189,7 @@ class FinishCommand extends Command
             $earningsByUser = [];
 
             foreach ($bets as $bet) {
-                if ($bet['choice_key'] == $winnerResult) {
+                if ($bet['choice_key'] == $choiceData['choice']) {
                     if (!isset($earningsByUser[$bet['discord_user_id']])) {
                         $earningsByUser[$bet['discord_user_id']] = 0;
                     }

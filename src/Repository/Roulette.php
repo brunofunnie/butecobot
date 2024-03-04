@@ -31,11 +31,14 @@ class Roulette extends Repository
     public const BLACK = 2;
     public const RED = 3;
 
+    public const GREEN_MULTIPLIER = 14;
+    public const BLACK_MULTIPLIER = 2;
+    public const RED_MULTIPLIER = 2;
 
     public const LABEL_CHOICE = [
-        self::GREEN => 'Escolha Verde!',
-        self::BLACK => 'Escolha Preto!',
-        self::RED => 'Escolha Vermelho!',
+        self::GREEN => 'VERDE',
+        self::BLACK => 'PRETO',
+        self::RED => 'VERMELHO',
     ];
 
     private RouletteBet $rouletteBetRepository;
@@ -51,7 +54,7 @@ class Roulette extends Repository
         parent::__construct($db);
     }
 
-    public function createEvent(string $eventName, int $value, int $discordId) : int|bool
+    public function createEvent(string $eventName, int $value, int $discordId): int|bool
     {
         $user = $this->userRepository->getByDiscordId($discordId);
         $userId = $user[0]['id'];
@@ -69,7 +72,7 @@ class Roulette extends Repository
         return $createEvent ? $this->db->getLastInsertId() : false;
     }
 
-    public function close(int $eventId) : bool
+    public function close(int $eventId): bool
     {
         return $this->db->query(
             'UPDATE roulette SET status = :status WHERE id = :event_id',
@@ -80,7 +83,7 @@ class Roulette extends Repository
         );
     }
 
-    public function finish(int $eventId) : bool
+    public function finish(int $eventId): bool
     {
         return $this->db->query(
             'UPDATE roulette SET status = :status WHERE id = :event_id',
@@ -89,25 +92,25 @@ class Roulette extends Repository
                 'event_id' => $eventId,
             ]
         );
-    }
+    }   
 
-    public function listEventsOpen(int $limit = null) : array
+    public function listEventsOpen(int $limit = null): array
     {
         return $this->normalizeRoulette($this->listEventsByStatus(['status_open' => self::OPEN], $limit));
     }
 
-    public function listEventsClosed(int $limit = null) : array
+    public function listEventsClosed(int $limit = null): array
     {
 
         return $this->normalizeRoulette($this->listEventsByStatus(['status_closed' => self::CLOSED], $limit));
     }
 
-    public function listEventsPaid(int $limit = null) : array
+    public function listEventsPaid(int $limit = null): array
     {
         return $this->normalizeRoulette($this->listEventsByStatus(['status_paid' => self::PAID], $limit));
     }
 
-    public function listEventsByStatus(array $status, int $limit = null) : array
+    public function listEventsByStatus(array $status, int $limit = null): array
     {
         $statusKeys = implode(',', array_map(fn ($item) => ":{$item}", array_keys($status)));
 
@@ -122,10 +125,10 @@ class Roulette extends Repository
         return $this->db->query(
             "SELECT
                 id AS roulette_id,
-                description AS description,
-                status AS status,
-                choice AS choice,
-                amount AS amount
+                description,
+                status,
+                result,
+                amount
             FROM roulette
             WHERE status IN ({$statusKeys}) ORDER BY id DESC $limitSQL
             ",
@@ -133,20 +136,20 @@ class Roulette extends Repository
         );
     }
 
-    public function normalizeRoulette(array $roulette) : array
+    public function normalizeRoulette(array $roulette): array
     {
         return array_map(function ($item) {
             return [
                 'roulette_id' => $item['roulette_id'],
                 'description' => $item['description'],
                 'amount' => $item['amount'],
-                'choice' => $item['choice'],
+                'result' => $item['result'],
                 'status' => $item['status'],
             ];
         }, $roulette);
     }
 
-    public function getRouletteById(int $rouletteId) : array
+    public function getRouletteById(int $rouletteId): array
     {
         return $this->db->query(
             "SELECT * FROM roulette WHERE id = :event_id",
@@ -156,7 +159,7 @@ class Roulette extends Repository
         );
     }
 
-    public function closeEvent(int $rouletteId) : bool
+    public function closeEvent(int $rouletteId): bool
     {
         return $this->db->query(
             'UPDATE roulette SET status = :status WHERE id = :event_id',
@@ -167,48 +170,66 @@ class Roulette extends Repository
         );
     }
 
-    public function payoutRoulette(int $rouletteId, $winnerChoiceKey) : array
+    public function payoutRoulette(int $rouletteId, $winnerNumber): array
     {
         $winners = [];
         $bets = $this->rouletteBetRepository->getBetsByEventId($rouletteId);
+        $choiceData = $this->getWinnerChoiceByNumber($winnerNumber);
         $odd = 2;
 
-        if ($winnerChoiceKey == Roulette::GREEN) {
+        if ($choiceData['choice'] === self::GREEN) {
             $odd = 14;
         }
 
-        $this->updateRouletteWithWinner($winnerChoiceKey, $rouletteId);
+        $this->updateRouletteWithWinner($winnerNumber, $rouletteId);
 
         foreach ($bets as $bet) {
-            $choiceKey =  $bet['choice_key'];
-
-            if ($bet['choice_key'] !== $winnerChoiceKey) {
+            if ($bet['choice_key'] !== $choiceData['choice']) {
                 continue;
             }
 
             $betPayout = $bet['amount'] * $odd;
-            $this->userCoinHistoryRepository->create($bet['user_id'], $betPayout, 'RouletteBet', $rouletteId);
-
             $winners[] = [
                 'discord_user_id' => $bet['discord_user_id'],
                 'discord_username' => $bet['discord_username'],
-                'choice_key' => $choiceKey,
+                'choice_key' => $bet['choice_key'],
                 'earnings' => $betPayout,
             ];
+
+            $this->userCoinHistoryRepository->create($bet['user_id'], $betPayout, 'RouletteBet', $rouletteId);
         }
 
         return $winners;
     }
 
-    public function updateRouletteWithWinner(int $choiceId, int $eventId) : bool
+    public function updateRouletteWithWinner(int $winnerNumber, int $eventId): bool
     {
         return $this->db->query(
-            'UPDATE roulette SET status = :status, choice = :choice WHERE id = :event_id',
+            'UPDATE roulette SET status = :status, result = :result WHERE id = :event_id',
             [
                 'status' => self::PAID,
-                'choice' => $choiceId,
+                'result' => $winnerNumber,
                 'event_id' => $eventId,
             ]
         );
+    }
+
+    public function getWinnerChoiceByNumber(int $number): array
+    {
+        if ($number == 0) {
+            $winnerChoice = self::GREEN;
+            $labelChoice = "🟩 G[$number]";
+        } elseif ($number % 2 == 0) {
+            $winnerChoice = self::BLACK;
+            $labelChoice = "⬛ BL[$number]";
+        } else {
+            $winnerChoice = self::RED;
+            $labelChoice = "🟥 R[$number]";
+        }
+
+        return [
+            'choice' => $winnerChoice,
+            'label' => $labelChoice,
+        ];
     }
 }

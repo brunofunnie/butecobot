@@ -2,6 +2,7 @@
 
 namespace Chorume\Application\Commands\Roulette;
 
+use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
@@ -11,7 +12,7 @@ use Chorume\Application\Commands\Roulette\RouletteBuilder;
 use Chorume\Repository\Roulette;
 use Chorume\Repository\RouletteBet;
 use Chorume\Repository\User;
-use Predis\Client as RedisClient;
+use function Chorume\Helpers\find_role_array;
 
 class CreateCommand extends Command
 {
@@ -65,7 +66,7 @@ class CreateCommand extends Command
 
         // Create roulette Sound
         $channel = $this->discord->getChannel($interaction->channel_id);
-        $audio = __DIR__ . '/../../../Audio/roulette_create_' . rand(1, 5) . '.mp3';
+        $audio = __DIR__ . '/../../../Assets/Sounds/roulette_create_' . rand(1, 5) . '.mp3';
         $voice = $this->discord->getVoiceClient($channel->guild_id);
 
         if ($channel->isVoiceBased()) {

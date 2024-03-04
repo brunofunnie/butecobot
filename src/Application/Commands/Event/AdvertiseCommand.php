@@ -39,7 +39,7 @@ class AdvertiseCommand extends Command
 
          // Rumble Sound
          $channel = $this->discord->getChannel($interaction->channel_id);
-         $audio = __DIR__ . '/../../../Audio/rumble.mp3';
+         $audio = __DIR__ . '/../../../Assets/Sounds/rumble.mp3';
          $voice = $this->discord->getVoiceClient($channel->guild_id);
 
          if ($channel->isVoiceBased() && $bannerKey === 'UFC') {

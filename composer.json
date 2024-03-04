@@ -6,12 +6,16 @@
         "nunomaduro/termwind": "^1.15",
         "predis/predis": "^2.2",
         "robmorgan/phinx": "^0.15.4",
-        "guzzlehttp/guzzle": "^7.0"
+        "guzzlehttp/guzzle": "^7.0",
+        "intervention/image": "^3.4"
     },
     "autoload": {
         "psr-4": {
             "Chorume\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers/FindHelper.php"
+        ]
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.40"

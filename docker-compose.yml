@@ -1,12 +1,12 @@
 services:
   chorumebot:
     container_name: chorumebot-app
+    image: brunofunnie/chorumebot:latest
     build:
       context: ./docker
       dockerfile: web.dockerfile
     volumes:
       - ./:/app
-    # command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     networks:
       chorumebot:
 

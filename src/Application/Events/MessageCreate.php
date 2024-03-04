@@ -8,10 +8,15 @@ use Discord\Parts\Channel\Message;
 use Discord\Parts\Embed\Embed;
 use Chorume\Repository\Talk;
 
-class MessageCreate extends Event
+class MessageCreate
 {
+    public function __invoke(Message $message): void
+    {
+        $this->handle($message);
+    }
+
     public function __construct(
-        private $discord,
+        private Discord $discord,
         private $config,
         private $redis,
         private Talk $talkRepository

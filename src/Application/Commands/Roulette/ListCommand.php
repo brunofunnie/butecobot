@@ -2,15 +2,16 @@
 
 namespace Chorume\Application\Commands\Roulette;
 
+use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
+use Discord\Parts\Embed\Embed;
 use Discord\Parts\Interactions\Interaction;
 use Chorume\Application\Commands\Command;
 use Chorume\Repository\Roulette;
 use Chorume\Repository\RouletteBet;
-use Discord\Parts\Embed\Embed;
 use Chorume\Repository\User;
-use Predis\Client as RedisClient;
+use function Chorume\Helpers\find_role_array;
 
 class ListCommand extends Command
 {
@@ -39,7 +40,6 @@ class ListCommand extends Command
             }
 
             $roulettes = [...$roulettesOpen, ...$roulettesClosed];
-
             $ephemeralMsg = true;
 
             if (find_role_array($this->config['admin_role'], 'name', $interaction->member->roles)) {
@@ -49,6 +49,7 @@ class ListCommand extends Command
             $roulettesDescription = "\n";
 
             if (empty($roulettes)) {
+                $this->discord->logger->debug('Não há roletas abertas');
                 $interaction->updateOriginalResponse(
                     MessageBuilder::new()->setContent("Não há Roletas abertas!")
                 );
@@ -65,6 +66,7 @@ class ListCommand extends Command
                 );
             }
 
+            $this->discord->logger->debug('Listando Roletas', ['roulettesDescription' => $roulettesDescription]);
             $embed = new Embed($this->discord);
             $embed
                 ->setTitle("ROLETAS")
