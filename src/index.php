@@ -145,7 +145,7 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
                     )
                 );
 
-                $redis->set("voice_cache:" . $member->member->user->id, json_encode([
+                $redis->set("presence_cache:" . $member->member->user->id, json_encode([
                     "entry_time" => time(),
                     "id" => $member->member->user->id
                 ]));
