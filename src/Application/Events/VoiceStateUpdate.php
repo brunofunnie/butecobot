@@ -70,7 +70,7 @@ class VoiceStateUpdate
                     'elapsedSeconds' => $elapsedSeconds,
                 ];
 
-                $this->userRepository->giveCoins($user->id, $accumulatedAmount, json_encode($presenceDescription));
+                $this->userRepository->giveCoins($user->id, $accumulatedAmount, 'Presence', json_encode($presenceDescription));
                 $discord->getLogger()->debug(
                     sprintf(
                         "Presence: username: %s - received: %s coins - elapsed seconds: %s",
