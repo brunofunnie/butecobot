@@ -12,6 +12,7 @@ use Chorume\Application\Discord\MessageComposer;
 use Chorume\Helpers\RedisHelper;
 use Chorume\Repository\User;
 use Chorume\Repository\UserCoinHistory;
+use function Chorume\Helpers\find_role_array;
 use Exception;
 
 class FlyCommand extends Command
