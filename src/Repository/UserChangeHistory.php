@@ -4,15 +4,14 @@ namespace Chorume\Repository;
 
 class UserChangeHistory extends Repository
 {
-    public function create(int $userId, string $discord_username, string $discord_global_name, string $discord_avatar): bool
+    public function create(int $userId, string $info, string $event_label): bool
     {
         return $this->db->query(
-            'INSERT INTO users_changes_history (user_id, discord_username, discord_global_name, discord_avatar) VALUES (:user_id, :discord_username, :discord_global_name, :discord_avatar)',
+            'INSERT INTO users_changes_history (user_id, info, event_label) VALUES (:user_id, :info, :event_label)',
             [
                 'user_id' => $userId,
-                'discord_username' => $discord_username,
-                'discord_global_name' => $discord_global_name,
-                'discord_avatar' => $discord_avatar,
+                'info' => $info,
+                'event_label' => $event_label
             ]
         );
     }

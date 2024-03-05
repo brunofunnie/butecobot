@@ -47,49 +47,78 @@ class GuildMemberUpdate
                 'received_initial_coins' => 0
             ]);
 
-            $this->userChangeHistoryRepository->create(
-                $userId,
-                $member->user->username,
-                $member->user->global_name,
-                $filename
-            );
+            $updates = [
+                [
+                    'event_label' => 'New User Created',
+                    'info' => $member->user->username
+                ],
+                [
+                    'event_label' => 'New User Created',
+                    'info' => $member->user->global_name
+                ],
+                [
+                    'event_label' => 'New User Created',
+                    'info' => $filename
+                ]
+            ];
 
-            copy($member->user->avatar, $avatarPath . $filename);   
+            foreach ($updates as $update) {
+                $this->userChangeHistoryRepository->create(
+                    $userId,
+                    $update['info'],
+                    $update['event_label']
+                );
+            }
+
+            copy($member->user->avatar, $avatarPath . $filename);
 
             return;
         }
 
         if ($user[0]['discord_avatar'] !== $member->user->avatar) {
-            $this->discord->getLogger()->debug("Member Update: Updated avatar");
+            $this->discord->getLogger()->debug("Member Update: Avatar updated");
 
             $this->userRepository->update($user[0]['id'], [
-                'discord_avatar' => $member->user->avatar
+                'discord_avatar' => $member->user->avatar,
+                'discord_joined_at' => $member->joined_at
             ]);
+
             $this->userChangeHistoryRepository->create(
                 $user[0]['id'],
-                $member->user->username,
-                $member->user->global_name,
-                $filename
+                $filename,
+                'Discord Avatar Updated'
             );
 
             copy($member->user->avatar, $avatarPath . $filename);
         }
 
-        if (
-            $user[0]['discord_username'] !== $member->user->username
-            || $user[0]['discord_global_name'] !== $member->user->global_name
-        ) {
-            $this->discord->getLogger()->debug("Member Update: User updated");
+        if ($user[0]['discord_username'] !== $member->user->username) {
+            $this->discord->getLogger()->debug("Member Update: Username updated");
+
             $this->userRepository->update($user[0]['id'], [
                 'discord_username' => $member->user->username,
-                'discord_global_name' => $member->user->global_name,
                 'discord_joined_at' => $member->joined_at
             ]);
+
             $this->userChangeHistoryRepository->create(
                 $user[0]['id'],
                 $member->user->username,
+                'Discord Username Updated'
+            );
+        }
+
+        if ($user[0]['discord_global_name'] !== $member->user->global_name) {
+            $this->discord->getLogger()->debug("Member Update: Global name updated");
+
+            $this->userRepository->update($user[0]['id'], [
+                'discord_global_name' => $member->user->global_name,
+                'discord_joined_at' => $member->joined_at
+            ]);
+
+            $this->userChangeHistoryRepository->create(
+                $user[0]['id'],
                 $member->user->global_name,
-                $filename
+                'Discord Global Name Updated'
             );
         }
     }
