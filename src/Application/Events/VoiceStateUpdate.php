@@ -66,7 +66,6 @@ class VoiceStateUpdate
                 $coinPercentage = 5 / 100; // 5 percent
                 $accumulatedAmount = $elapsedSeconds * $coinPercentage;
                 $presenceDescription = [
-                    'amount' => $accumulatedAmount,
                     'elapsedSeconds' => $elapsedSeconds,
                 ];
 
