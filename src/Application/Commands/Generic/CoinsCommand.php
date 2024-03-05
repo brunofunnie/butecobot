@@ -57,11 +57,12 @@ class CoinsCommand extends Command
                     return;
                 }
 
+                // Check if user is registered, if not, register and give initial coins
                 $discordId = $interaction->member->user->id;
                 $user = $this->userRepository->getByDiscordId($discordId);
 
                 if (empty($user)) {
-                    if ($this->userRepository->giveInitialCoins(
+                    if ($this->userRepository->registerAndGiveInitialCoins(
                         $interaction->member->user->id,
                         $interaction->member->user->username
                     )) {
@@ -78,11 +79,25 @@ class CoinsCommand extends Command
                     }
                 }
 
+                // Check if is registered user but didn't receive initial coins
+                if ($user[0]['received_initial_coins'] === 0) {
+                    $this->userRepository->giveCoins($interaction->member->user->id, 100, 'Initial');
+                    $this->userRepository->update($user[0]['id'], ['received_initial_coins' => 1]);
+
+                    $this->messageComposer->embed(
+                        title: 'Bem vindo',
+                        message: 'Você recebeu **100** coins iniciais! Aposte sabiamente :man_mage:',
+                        color: '#F5D920',
+                        thumbnail: $this->config['images']['one_coin']
+                    );
+                }
+
                 $coinsQuery = $this->userRepository->getCurrentCoins($interaction->member->user->id);
                 $currentCoins = $coinsQuery[0]['total'];
                 $dailyCoins = 100;
                 $message = '';
 
+                // Check if user can receive daily coins
                 if ($this->userRepository->canReceivedDailyCoins($interaction->member->user->id) && !empty($user)) {
                     $currentCoins += $dailyCoins;
                     $this->userRepository->giveCoins($interaction->member->user->id, $dailyCoins, 'Daily');

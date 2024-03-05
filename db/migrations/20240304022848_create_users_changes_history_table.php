@@ -12,6 +12,7 @@ final class CreateUsersChangesHistoryTable extends AbstractMigration
         $table->addColumn('user_id', 'integer', ['signed' => false, 'null' => false])
             ->addColumn('discord_username', 'string', ['limit' => 255, 'null' => false])
             ->addColumn('discord_global_name', 'string', ['limit' => 255, 'null' => false])
+            ->addColumn('discord_avatar', 'string', ['limit' => 255, 'null' => false])
             ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
             ->addForeignKey('user_id', 'users', 'id', array('delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION'))

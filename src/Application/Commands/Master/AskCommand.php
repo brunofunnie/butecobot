@@ -211,7 +211,7 @@ class AskCommand extends Command
             $request = new Request('POST', 'https://api.elevenlabs.io/v1/text-to-speech/' . getenv('MASTER_VOICE_ID'), $headers, json_encode($body));
             $response = $client->send($request);
             $data = $response->getBody()->getContents();
-            $filename = sprintf("%s/temp/audio/%s.mp3", realpath(__DIR__ . '/../../../../'), date('d-m-Y_H-i-s-m-u'));
+            $filename = sprintf("%s/storage/audios/%s.mp3", realpath(__DIR__ . '/../../../../'), date('d-m-Y_H-i-s-m-u'));
 
             $this->discord->getLogger()->info('Saving audio file: ' . $filename);
 

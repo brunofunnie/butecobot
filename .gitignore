@@ -2,5 +2,5 @@ vendor/
 .env
 *.log
 temp_audio/*
-
+storage/*
 ./app_mysql

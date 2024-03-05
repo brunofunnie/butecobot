@@ -14,7 +14,6 @@ use Discord\Parts\User\Member;
 use Discord\WebSockets\Intents;
 use Discord\WebSockets\Event as DiscordEvent;
 use Chorume\Database\Db;
-use Chorume\Repository\User;
 use Chorume\Repository\Event;
 use Chorume\Repository\EventChoice;
 use Chorume\Repository\EventBet;
@@ -22,6 +21,8 @@ use Chorume\Repository\Talk;
 use Chorume\Repository\UserCoinHistory;
 use Chorume\Repository\Roulette;
 use Chorume\Repository\RouletteBet;
+use Chorume\Repository\User;
+use Chorume\Repository\UserChangeHistory;
 use Chorume\Application\Commands\Code\CodeCommand;
 use Chorume\Application\Commands\Event\AdvertiseCommand;
 use Chorume\Application\Commands\Event\BetCommand;
@@ -105,6 +106,7 @@ $discord = new Discord([
 
 $userRepository = new User($db);
 $userCoinHistoryRepository = new UserCoinHistory($db);
+$userChangeHistoryRepository = new UserChangeHistory($db);
 $eventRepository = new Event($db);
 $eventChoiceRepository = new EventChoice($db);
 $eventBetsRepository = new EventBet($db);
@@ -212,7 +214,7 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis, &
     echo "         Started at: $botStartedAt                " . PHP_EOL;
 });
 
-$discord->on(DiscordEvent::GUILD_MEMBER_UPDATE, new GuildMemberUpdate($discord, $config, $redis, $userRepository));
+$discord->on(DiscordEvent::GUILD_MEMBER_UPDATE, new GuildMemberUpdate($discord, $config, $redis, $userRepository, $userChangeHistoryRepository));
 $discord->on(DiscordEvent::MESSAGE_CREATE, new MessageCreate($discord, $config, $redis, $talkRepository));
 $discord->listenCommand('test', new TestCommand($discord, $config, $redis));
 $discord->listenCommand('codigo', new CodeCommand($discord, $config, $redis));

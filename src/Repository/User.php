@@ -9,6 +9,20 @@ class User extends Repository
         return $this->db->query("SELECT * FROM users");
     }
 
+    public function create(array $data): bool|int
+    {
+        $query = $this->db->query(
+            'INSERT INTO users (discord_user_id, discord_username, discord_global_name, discord_avatar, discord_joined_at, received_initial_coins) VALUES (:discord_user_id, :discord_username, :discord_global_name, :discord_avatar, :discord_joined_at, :received_initial_coins)',
+            $data
+        );
+
+        if ($query) {
+            return $this->db->getLastInsertId();
+        }
+
+        return false;
+    }
+
     public function getByDiscordId(int $discordId): array
     {
         return $this->db->query(
@@ -37,7 +51,7 @@ class User extends Repository
         return empty($result);
     }
 
-    public function giveInitialCoins(int $discordId, $discordUsername): bool
+    public function registerAndGiveInitialCoins(int $discordId, $discordUsername): bool
     {
         $createUser = $this->db->query(
             'INSERT INTO users (discord_user_id, discord_username, received_initial_coins) VALUES (:discord_user_id, :discord_username, :received_initial_coins)',
@@ -142,5 +156,15 @@ class User extends Repository
         );
 
         return !empty($result);
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $fields = array_map(fn ($item) => "{$item} = :{$item}", array_keys($data));
+
+        return $this->db->query(
+            "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id",
+            array_merge($data, ['id' => $id])
+        );
     }
 }

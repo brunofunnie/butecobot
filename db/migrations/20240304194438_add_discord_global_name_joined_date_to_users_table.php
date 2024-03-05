@@ -22,12 +22,17 @@ final class AddDiscordGlobalNameJoinedDateToUsersTable extends AbstractMigration
         $table = $this->table('users');
 
         if (!$table->hasColumn('discord_global_name')) {
-            $table->addColumn('discord_global_name', 'varchar', ['limit' => 255, 'after' => 'discord_username'])
+            $table->addColumn('discord_global_name', 'string', ['limit' => 255, 'after' => 'discord_username'])
                   ->update();
         }
 
-        if (!$table->hasColumn('joined_at')) {
-            $table->addColumn('joined_at', 'datetime', ['after' => 'discord_username'])
+        if (!$table->hasColumn('discord_avatar')) {
+            $table->addColumn('discord_avatar', 'string', ['limit' => 255, 'after' => 'discord_global_name'])
+                  ->update();
+        }
+
+        if (!$table->hasColumn('discord_joined_at')) {
+            $table->addColumn('discord_joined_at', 'datetime', ['after' => 'discord_avatar'])
                   ->update();
         }
     }
