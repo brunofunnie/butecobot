@@ -49,15 +49,15 @@ class GuildMemberUpdate
 
             $updates = [
                 [
-                    'event_label' => 'New User Created',
+                    'event_label' => 'Username',
                     'info' => $member->user->username
                 ],
                 [
-                    'event_label' => 'New User Created',
+                    'event_label' => 'Nickname',
                     'info' => $member->user->global_name
                 ],
                 [
-                    'event_label' => 'New User Created',
+                    'event_label' => 'Avatar',
                     'info' => $filename
                 ]
             ];
@@ -86,7 +86,7 @@ class GuildMemberUpdate
             $this->userChangeHistoryRepository->create(
                 $user[0]['id'],
                 $filename,
-                'Discord Avatar Updated'
+                'Avatar'
             );
 
             copy($member->user->avatar, $avatarPath . $filename);
@@ -103,7 +103,7 @@ class GuildMemberUpdate
             $this->userChangeHistoryRepository->create(
                 $user[0]['id'],
                 $member->user->username,
-                'Discord Username Updated'
+                'Username'
             );
         }
 
@@ -118,7 +118,7 @@ class GuildMemberUpdate
             $this->userChangeHistoryRepository->create(
                 $user[0]['id'],
                 $member->user->global_name,
-                'Discord Global Name Updated'
+                'Nickname'
             );
         }
     }
