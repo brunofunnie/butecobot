@@ -45,6 +45,7 @@ use Chorume\Application\Commands\Roulette\ListCommand as RouletteListCommand;
 use Chorume\Application\Commands\Test\TestCommand;
 use Chorume\Application\Events\MessageCreate;
 use Chorume\Application\Events\GuildMemberUpdate;
+use Chorume\Application\Events\VoiceStateUpdate;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Guild\Guild;
 use Discord\Parts\WebSockets\VoiceStateUpdate as WebSocketsVoiceStateUpdate;
@@ -114,58 +115,7 @@ $rouletteRepository = new Roulette($db);
 $rouletteBetRepository = new RouletteBet($db);
 $talkRepository = new Talk($db);
 
-$voiceUsersJoined = [];
-
-$discord->on(DiscordEvent::VOICE_STATE_UPDATE, function (WebSocketsVoiceStateUpdate $data, Discord $discord) use (&$voiceUsersJoined, $userRepository) {
-    $channel = $data->channel;
-    $user = $data->user;
-    $isUserDeafened = $data->self_deaf || $data->deaf;
-
-    // reset the entry time in case we find previous data to prevent glitches
-    $foundPreviousUserData = false;
-    foreach ($voiceUsersJoined as $key => $value) {
-        if ($value["id"] === $user->id) {
-            $foundPreviousUserData = true;
-            $value["entry_time"] = time();
-        }
-    }
-
-    // if the user is not in the cache, we add it
-    if (!$foundPreviousUserData) {
-        array_push($voiceUsersJoined, [
-            'id' => $user->id,
-            'entry_time' => time(),
-        ]);
-    }
-
-    // if the user left a channel or is deaf, we remove it from the cache and pay their coins if he was there for more than 1 minute
-    if ($channel == null || $isUserDeafened) {
-        foreach ($voiceUsersJoined as $key => $value) {
-            if ($value["id"] === $user->id) {
-                $entry_time = $value["entry_time"];
-                $elapsedSeconds = (time() - $entry_time);
-
-                if ($elapsedSeconds >= 60) {
-                    $accumulatedAmount = $elapsedSeconds / 10;
-                    $userRepository->giveCoins($user->id, $accumulatedAmount, 'Presence', "Coins por ficar " . $elapsedSeconds . " segundos em call");
-                    $discord->getLogger()->debug(
-                        sprintf(
-                            "Presence: username: %s - received: %s coins - elapsed seconds: %s",
-                            $user->username,
-                            $accumulatedAmount,
-                            $elapsedSeconds
-                        )
-                    );
-                }
-
-                unset($voiceUsersJoined[$key]);
-            }
-        }
-        return;
-    }
-});
-
-$discord->on('init', function (Discord $discord) use ($userRepository, $redis, &$voiceUsersJoined) {
+$discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
     // Initialize application commands
     $initializeCommandsFiles = glob(__DIR__ . '/Application/Initialize/*Command.php');
 
@@ -180,7 +130,7 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis, &
         This fetches all the voice channels in the guild and adds their users to the voice channel cache 
         in order to give them coins for staying in the voice channel
     */
-    $discord->guilds->fetch($_ENV['GUILD_ID'])->done(function (Guild $guild) use (&$voiceUsersJoined, $discord) {
+    $discord->guilds->fetch($_ENV['GUILD_ID'])->done(function (Guild $guild) use ($discord, &$redis) {
         foreach ($guild->channels as $channel) {
             if (!$channel->type == Channel::TYPE_GUILD_VOICE) return;
 
@@ -195,10 +145,10 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis, &
                     )
                 );
 
-                array_push($voiceUsersJoined, [
-                    'id' => $member->member->user->id,
-                    'entry_time' => time(),
-                ]);
+                $redis->set("presence_cache:" . $member->member->user->id, json_encode([
+                    "entry_time" => time(),
+                    "id" => $member->member->user->id
+                ]));
             }
         }
     });
@@ -216,6 +166,7 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis, &
 
 $discord->on(DiscordEvent::GUILD_MEMBER_UPDATE, new GuildMemberUpdate($discord, $config, $redis, $userRepository, $userChangeHistoryRepository));
 $discord->on(DiscordEvent::MESSAGE_CREATE, new MessageCreate($discord, $config, $redis, $talkRepository));
+$discord->on(DiscordEvent::VOICE_STATE_UPDATE, new VoiceStateUpdate($discord, $redis, $userRepository));
 $discord->listenCommand('test', new TestCommand($discord, $config, $redis));
 $discord->listenCommand('codigo', new CodeCommand($discord, $config, $redis));
 $discord->listenCommand('coins', new CoinsCommand($discord, $config, $redis, $userRepository, $userCoinHistoryRepository));
