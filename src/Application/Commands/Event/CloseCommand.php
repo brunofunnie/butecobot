@@ -8,6 +8,7 @@ use Chorume\Application\Commands\Command;
 use Chorume\Repository\Event;
 use Chorume\Repository\EventChoice;
 use Chorume\Application\Discord\MessageComposer;
+use function Chorume\Helpers\find_role_array;
 
 class CloseCommand extends Command
 {
