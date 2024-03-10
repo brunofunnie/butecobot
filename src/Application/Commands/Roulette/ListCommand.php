@@ -8,6 +8,7 @@ use Discord\Builders\MessageBuilder;
 use Discord\Parts\Embed\Embed;
 use Discord\Parts\Interactions\Interaction;
 use Chorume\Application\Commands\Command;
+use Chorume\Application\Discord\MessageComposer;
 use Chorume\Repository\Roulette;
 use Chorume\Repository\RouletteBet;
 use Chorume\Repository\User;
@@ -15,6 +16,8 @@ use function Chorume\Helpers\find_role_array;
 
 class ListCommand extends Command
 {
+    private MessageComposer $messageComposer;
+
     public function __construct(
         private Discord $discord,
         private $config,
@@ -23,6 +26,7 @@ class ListCommand extends Command
         private Roulette $rouletteRepository,
         private RouletteBet $rouletteBetRepository
     ) {
+        $this->messageComposer = new MessageComposer($discord);
     }
 
     public function handle(Interaction $interaction): void
@@ -51,14 +55,17 @@ class ListCommand extends Command
             if (empty($roulettes)) {
                 $this->discord->logger->debug('Não há roletas abertas');
                 $interaction->updateOriginalResponse(
-                    MessageBuilder::new()->setContent("Não há Roletas abertas!")
+                    $this->messageComposer->embed(
+                        title: "Roleta",
+                        message: "Não há Roletas abertas!"
+                    )
                 );
                 return;
             }
 
             foreach ($roulettes as $event) {
                 $roulettesDescription .= sprintf(
-                    "**[#%s] %s (Bet: C$ %s)**\n**Status: %s**\n \n \n",
+                    ":game_die: **#%s**\n:label: %s\n:chorumecoin: C$ %s**\n**STATUS: %s**\n\n",
                     $event['roulette_id'],
                     strtoupper($event['description']),
                     strtoupper($event['amount']),

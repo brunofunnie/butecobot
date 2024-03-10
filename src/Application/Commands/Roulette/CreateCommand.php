@@ -9,6 +9,7 @@ use Discord\Parts\Interactions\Interaction;
 use Discord\Voice\VoiceClient;
 use Chorume\Application\Commands\Command;
 use Chorume\Application\Commands\Roulette\RouletteBuilder;
+use Chorume\Application\Discord\MessageComposer;
 use Chorume\Repository\Roulette;
 use Chorume\Repository\RouletteBet;
 use Chorume\Repository\User;
@@ -17,6 +18,7 @@ use function Chorume\Helpers\find_role_array;
 class CreateCommand extends Command
 {
     private RouletteBuilder $rouletteBuilder;
+    private MessageComposer $messageComposer;
 
     public function __construct(
         private Discord $discord,
@@ -34,6 +36,8 @@ class CreateCommand extends Command
             $this->rouletteRepository,
             $this->rouletteBetRepository
         );
+
+        $this->messageComposer = new MessageComposer($discord);
     }
 
     public function handle(Interaction $interaction): void
@@ -52,19 +56,29 @@ class CreateCommand extends Command
     public function createRoulette(Interaction $interaction, string $eventName, int $value): void
     {
         $discordId = $interaction->member->user->id;
-        $rouletteId = $this->rouletteRepository->createEvent(strtoupper($eventName), $value, $discordId);
-
-        if (!$rouletteId) {
-            $interaction->respondWithMessage(MessageBuilder::new()->setContent("Não foi possível criar a roleta!"), true);
-            return;
-        }
 
         if ($value < 1 && $value > $_ENV['ROULETTE_LIMIT']) {
             $interaction->respondWithMessage(
-                MessageBuilder::new()->setContent(
-                    sprintf("Só é possível criar roletas entre %s e %s coin!", 1, $_ENV['ROULETTE_LIMIT'])
-                ),
-            true);
+                $this->messageComposer->embed(
+                    title: "Roleta",
+                    message: sprintf("Só é possível criar roletas entre %s e %s coin!", 1, $_ENV['ROULETTE_LIMIT'])
+                )
+                , true
+            );
+            return;
+        }
+
+        // Create roulette
+        $rouletteId = $this->rouletteRepository->createEvent(strtoupper($eventName), $value, $discordId);
+
+        if (!$rouletteId) {
+            $interaction->respondWithMessage(
+                $this->messageComposer->embed(
+                    title: "Roleta",
+                    message: "Não foi possível criar a roleta!"
+                )
+                , true
+            );
             return;
         }
 
