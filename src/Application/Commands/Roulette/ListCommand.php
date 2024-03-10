@@ -65,7 +65,7 @@ class ListCommand extends Command
 
             foreach ($roulettes as $event) {
                 $roulettesDescription .= sprintf(
-                    ":game_die: **#%s**\n:label: %s\n:chorumecoin: C$ %s**\n**STATUS: %s**\n\n",
+                    ":game_die: **#%s**\n:label: %s\n:coin: C$ %s**\n**:vertical_traffic_light: %s**\n\n____________________\n\n",
                     $event['roulette_id'],
                     strtoupper($event['description']),
                     strtoupper($event['amount']),
