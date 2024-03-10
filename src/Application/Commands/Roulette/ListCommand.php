@@ -56,7 +56,7 @@ class ListCommand extends Command
                 $this->discord->logger->debug('Não há roletas abertas');
                 $interaction->updateOriginalResponse(
                     $this->messageComposer->embed(
-                        title: "Roleta",
+                        title: "ROLETAS",
                         message: "Não há Roletas abertas!"
                     )
                 );
