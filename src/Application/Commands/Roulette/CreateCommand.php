@@ -57,7 +57,7 @@ class CreateCommand extends Command
     {
         $discordId = $interaction->member->user->id;
 
-        if ($value < 1 && $value > $_ENV['ROULETTE_LIMIT']) {
+        if ($value < 1 || $value > $_ENV['ROULETTE_LIMIT']) {
             $interaction->respondWithMessage(
                 $this->messageComposer->embed(
                     title: "Roleta",
