@@ -135,13 +135,14 @@ class FinishCommand extends Command
         $loop->addTimer(6, function () use ($interaction, $roulette) {
             $rouletteId = $roulette[0]['id'];
             $followUpMessageId = $this->redis->get("roulette:{$rouletteId}:lastfollowup");
+            $hasAvailableNumbers = $this->redis->exists("roulette:numbers");
+            $numbers = $hasAvailableNumbers
+                            ? json_decode($this->redis->get("roulette:numbers"))
+                            : $this->generateNumbers();
+            $winnerNumber = array_shift($numbers);
+            $this->redis->set("roulette:numbers", json_encode(empty($numbers) ? $this->generateNumbers() : $numbers));
 
-            $numbers = range(0, 14);
-            shuffle($numbers);
-            shuffle($numbers);
-            $winnerNumber = array_rand($numbers);
-
-            if ($winnerNumber == 0) {
+            if ($winnerNumber === 0) {
                 // Brasil Sound
                 $channel = $this->discord->getChannel($interaction->channel_id);
                 $audio = __DIR__ . '/../../../Assets/Sounds/brasil.mp3';
@@ -230,5 +231,16 @@ class FinishCommand extends Command
             $builder->addEmbed($embed);
             $interaction->updateFollowUpMessage($followUpMessageId, $builder);
         });
+    }
+
+    private function generateNumbers()
+    {
+        $numbers = [];
+
+        for ($i = 0; $i < 100; $i++) {
+            $numbers[] = array_rand(range(0, 14));
+        }
+
+        return $numbers;
     }
 }
