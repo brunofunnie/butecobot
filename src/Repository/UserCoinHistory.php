@@ -32,7 +32,9 @@ class UserCoinHistory extends Repository
         $result = $this->db->query(
             "SELECT
                 SUM(uch.amount) AS total_coins,
-                u.discord_user_id
+                u.discord_user_id,
+                u.discord_username,
+                u.discord_global_name
             FROM users_coins_history uch
             JOIN users u ON uch.user_id = u.id
             GROUP BY uch.user_id

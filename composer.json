@@ -14,7 +14,8 @@
             "Chorume\\": "src/"
         },
         "files": [
-            "src/Helpers/FindHelper.php"
+            "src/Helpers/FindHelper.php",
+            "src/Helpers/StringHelper.php"
         ]
     },
     "require-dev": {

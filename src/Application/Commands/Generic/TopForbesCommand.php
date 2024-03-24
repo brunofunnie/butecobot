@@ -11,6 +11,7 @@ use Chorume\Application\Commands\Command;
 use Chorume\Application\Discord\MessageComposer;
 use Chorume\Repository\User;
 use Chorume\Repository\UserCoinHistory;
+use function Chorume\Helpers\format_money;
 
 class TopForbesCommand extends Command
 {
@@ -34,9 +35,18 @@ class TopForbesCommand extends Command
         $users = '';
         $acc = '';
 
-        foreach ($top10list as $bet) {
-            $users .= sprintf("<@%s>\n", $bet['discord_user_id']);
-            $acc .= sprintf("%s \n", $bet['total_coins']);
+        foreach ($top10list as $key => $bet) {
+            if ($key === 0) {
+                $users .= sprintf(":first_place: %s\n", $bet['discord_username']);
+            } elseif ($key === 1) {
+                $users .= sprintf(":second_place: %s\n", $bet['discord_username']);
+            } elseif ($key === 2) {
+                $users .= sprintf(":third_place: %s\n", $bet['discord_username']);
+            } else {
+                $users .= sprintf(":medal: %s\n", $bet['discord_global_name'] ?? $bet['discord_username']);
+            }
+
+            $acc .= sprintf("C$ %s \n", format_money($bet['total_coins']));
         }
 
         $interaction->respondWithMessage($this->messageComposer->embed(
