@@ -36,14 +36,16 @@ class TopForbesCommand extends Command
         $acc = '';
 
         foreach ($top10list as $key => $bet) {
+            $username = substr($bet['discord_global_name'] ?? $bet['discord_username'], 0, 25);
+
             if ($key === 0) {
-                $users .= sprintf(":first_place: %s\n", $bet['discord_username']);
+                $users .= sprintf(":first_place: %s\n", $username);
             } elseif ($key === 1) {
-                $users .= sprintf(":second_place: %s\n", $bet['discord_username']);
+                $users .= sprintf(":second_place: %s\n", $username);
             } elseif ($key === 2) {
-                $users .= sprintf(":third_place: %s\n", $bet['discord_username']);
+                $users .= sprintf(":third_place: %s\n", $username);
             } else {
-                $users .= sprintf(":medal: %s\n", $bet['discord_global_name'] ?? $bet['discord_username']);
+                $users .= sprintf(":medal: %s\n", $username);
             }
 
             $acc .= sprintf("C$ %s \n", format_money($bet['total_coins']));
