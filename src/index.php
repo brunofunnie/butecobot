@@ -126,9 +126,21 @@ $discord->on('init', function (Discord $discord) use ($redis, $config) {
         $discord->application->commands->save($command);
     }
 
-    if ($_ENV['DRINK_WATER_ENABLE'] == 1) {
-        $loop = $discord->getLoop();
-        $loop->addPeriodicTimer($_ENV['DRINK_WATER_INTERVAL'], function () use ($discord, $config) {
+    $loop = $discord->getLoop();
+    $loop->addPeriodicTimer($_ENV['MAIN_LOOP'], function () use ($discord, $config, $redis) {
+        if ($_ENV['DRINK_WATER_ENABLE'] == 1) {
+            $hourNow = date('G');
+            $canDrinkWater = $redis->get('drink_water_notification');
+
+            if ($hourNow < 8 || $hourNow > 20) {
+                return;
+            }
+
+            if ($canDrinkWater) {
+                return;
+            }
+
+            $redis->set('drink_water_notification', 1, 'EX', $_ENV['DRINK_WATER_INTERVAL']);
             $channels = explode(',', $_ENV['DRINK_WATER_CHANNELS']);
 
             foreach ($channels as $channel) {
@@ -138,8 +150,8 @@ $discord->on('init', function (Discord $discord) use ($redis, $config) {
                         ->setImage($config['images']['drink_water'][$drinkWaterIndex]);
                 $discord->getChannel($channel)->sendMessage(MessageBuilder::new()->addEmbed($message));
             }
-        });
-    }
+        }
+    });
 
     /*
         This fetches all the voice channels in the guild and adds their users to the voice channel cache 
