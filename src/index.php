@@ -8,9 +8,12 @@ use Monolog\Logger as Monolog;
 use Monolog\Level;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
+use Discord\Builders\MessageBuilder;
 use Discord\Discord;
+use Discord\Parts\Channel\Channel;
+use Discord\Parts\Embed\Embed;
+use Discord\Parts\Guild\Guild;
 use Discord\Parts\Interactions\Command\Command;
-use Discord\Parts\User\Member;
 use Discord\WebSockets\Intents;
 use Discord\WebSockets\Event as DiscordEvent;
 use Chorume\Database\Db;
@@ -46,9 +49,6 @@ use Chorume\Application\Commands\Test\TestCommand;
 use Chorume\Application\Events\MessageCreate;
 use Chorume\Application\Events\GuildMemberUpdate;
 use Chorume\Application\Events\VoiceStateUpdate;
-use Discord\Parts\Channel\Channel;
-use Discord\Parts\Guild\Guild;
-use Discord\Parts\WebSockets\VoiceStateUpdate as WebSocketsVoiceStateUpdate;
 
 $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -115,7 +115,7 @@ $rouletteRepository = new Roulette($db);
 $rouletteBetRepository = new RouletteBet($db);
 $talkRepository = new Talk($db);
 
-$discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
+$discord->on('init', function (Discord $discord) use ($redis, $config) {
     // Initialize application commands
     $initializeCommandsFiles = glob(__DIR__ . '/Application/Initialize/*Command.php');
 
@@ -124,6 +124,21 @@ $discord->on('init', function (Discord $discord) use ($userRepository, $redis) {
 
         $command = new Command($discord, $initializeCommand);
         $discord->application->commands->save($command);
+    }
+
+    if ($_ENV['DRINK_WATER_ENABLE'] == 1) {
+        $loop = $discord->getLoop();
+        $loop->addPeriodicTimer($_ENV['DRINK_WATER_INTERVAL'], function () use ($discord, $config) {
+            $channels = explode(',', $_ENV['DRINK_WATER_CHANNELS']);
+
+            foreach ($channels as $channel) {
+                $drinkWaterIndex = array_rand($config['images']['drink_water']);
+                $message = new Embed($discord);
+                $message->setTitle('Hora de beber água!')
+                        ->setImage($config['images']['drink_water'][$drinkWaterIndex]);
+                $discord->getChannel($channel)->sendMessage(MessageBuilder::new()->addEmbed($message));
+            }
+        });
     }
 
     /*

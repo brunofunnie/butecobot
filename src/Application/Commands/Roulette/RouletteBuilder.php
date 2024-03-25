@@ -46,7 +46,6 @@ class RouletteBuilder
         $roulette = $this->rouletteRepository->getRouletteById($rouletteId);
         $amountBet = (int) $roulette[0]['amount'];
         $status = (int) $roulette[0]['status'];
-        $embed = new Embed($this->discord);
 
         if (empty($roulette)) {
             $interaction->respondWithMessage(
