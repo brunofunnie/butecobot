@@ -55,6 +55,7 @@ return [
             'https://chorume.tech/imgs/chorumebot/drink-water-1.gif?v0.0.1',
             'https://chorume.tech/imgs/chorumebot/drink-water-2.gif?v0.0.1',
             'https://chorume.tech/imgs/chorumebot/drink-water-3.gif?v0.0.1',
+            'https://chorume.tech/imgs/chorumebot/drink-water-4.gif?v0.0.1',
         ]
     ],
 ];
