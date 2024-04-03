@@ -4,7 +4,7 @@ namespace Chorume\Repository;
 
 use Chorume\Database\Db;
 
-class Repository
+abstract class Repository
 {
     public function __construct(protected Db $db)
     {
