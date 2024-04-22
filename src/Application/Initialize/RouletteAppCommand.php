@@ -12,17 +12,17 @@ return [
             'description' => 'Cria Roletas',
             'options' => [
                 [
-                    'type' => Option::STRING,
-                    'name' => 'nome',
-                    'description' => 'Nome da Roleta',
-                    'required' => true,
-                ],
-                [
                     'type' => Option::INTEGER,
                     'name' => 'valor',
                     'description' => 'Quantidade de coins para apostar na roleta',
                     'required' => true,
                 ],
+                [
+                    'type' => Option::STRING,
+                    'name' => 'nome',
+                    'description' => 'Nome da Roleta',
+                    'required' => false,
+                ]
             ]
         ],
         [
