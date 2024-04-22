@@ -256,9 +256,8 @@ class RouletteBuilder
             }
         }
 
-        $player = new Player($userId, $amountBet, $choice, $userDiscord);
-
         if (!$playerFound) {
+            $player = new Player($userId, $amountBet, $choice, $userDiscord);
             $gameData->jogadores[] = $player;
         }
 
@@ -289,12 +288,11 @@ class RouletteBuilder
         });
 
         $embed = new Embed($this->discord);
-        $embed->setTitle(":moneybag: APOSTEM NA ROLETA")
+        $embed->setTitle(":moneybag: " . $roulette[0]['description'])
             ->setColor('#5266ED')
             ->setDescription(sprintf(
-                "**Roleta:** [#%s] %s\n**Total:** %s",
+                "**Roleta: #%s**\n**Total:** %s",
                 $rouletteId,
-                $roulette[0]['description'],
                 $gameData->AmountTotal
             ))
             ->setFooter("Últimos giros:\n" . $this->buildLastRoulettesChoices());
