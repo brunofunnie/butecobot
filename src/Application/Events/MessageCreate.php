@@ -7,6 +7,7 @@ use Discord\Builders\MessageBuilder;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Embed\Embed;
 use Chorume\Repository\Talk;
+use Chorume\Services\OpenAIService;
 
 class MessageCreate
 {
@@ -26,12 +27,36 @@ class MessageCreate
     public function handle(Message $message): void
     {
         if ($this->redis->get('talks')) {
+            $this->discord->getLogger()->debug("Loading Existing Talks");
             $textTriggers = json_decode($this->redis->get('talks'), true);
         } else {
+            $this->discord->getLogger()->debug("Preparing Talks from Database");
             $textTriggers = $this->talkRepository->listAllTriggers();
             $this->redis->set('talks', json_encode($textTriggers), 'EX', 60);
         }
 
+        $mentionPattern = '/<@(\d+)>/';
+        preg_match($mentionPattern, $message->content, $mentionMatches);
+
+        // Check if the message is a mention to the bot
+        if (isset($mentionMatches[1])) {
+            $mentionId = $mentionMatches[1];
+
+            if ($mentionId == $_ENV['BOT_ID']) {
+                $openAI = new OpenAIService($this->discord, $this->config, $this->redis);
+                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, 'Responda curto e grosso, pode até usar alguns palavrões, normalmente evasivo, como "fui comprar cigarro", "vai perguntar pra sua mãe", "não estou" e frases do tipo.'));
+
+                if (!$response) {
+                    $message->channel->sendMessage(MessageBuilder::new()->setContent(sprintf('<@%s>, %s', $message->author->id, 'que é carai?')));
+                    return;
+                }
+
+                $message->channel->sendMessage(MessageBuilder::new()->setContent(sprintf('<@%s>, %s', $message->author->id, $response)));
+                return;
+            }
+        }
+
+        // Check if the message matches any trigger in the database
         $found = $this->matchTriggers(strtolower($message->content), $textTriggers);
 
         if ($found) {
