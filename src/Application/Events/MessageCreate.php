@@ -45,7 +45,7 @@ class MessageCreate
             if ($mentionId == $_ENV['BOT_ID']) {
                 $openAI = new OpenAIService($this->discord, $this->config, $this->redis);
 
-                if (strlen($message->content) > 115) {
+                if (strlen($message->content) > 150) {
                     $message->channel->sendMessage(MessageBuilder::new()->setContent(sprintf('<@%s>, %s', $message->author->id, 'fala menos porra!')));
                     return;
                 }
