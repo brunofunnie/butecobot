@@ -37,7 +37,7 @@ class TransferCommand extends Command
 
         $daysActiveAccount = (new \DateTime())->diff(new \DateTime($fromUser[0]['created_at']))->days;
 
-        if ($coins <= 0 || $coins > 1000) {
+        if ($coins <= 0 || $coins > $_ENV['TRANSFER_LIMIT']) {
             $interaction->respondWithMessage(
                 $this->messageComposer->embed(
                     'Valor inválido',
