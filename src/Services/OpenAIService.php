@@ -14,7 +14,7 @@ class OpenAIService
     ) {
     }
 
-    public function askGPT($question, $humor = 'You are a helpful assistant.')
+    public function askGPT($question, $humor = 'You are a helpful assistant.', $tokens = 50)
     {
         $client = new HttpClient([
             'exceptions' => true,
@@ -34,7 +34,7 @@ class OpenAIService
             "top_p" => 1,
             "n" => 1,
             "stream" => false,
-            "max_tokens" => 50,
+            "max_tokens" => $tokens,
             "presence_penalty" => 0,
             "frequency_penalty" => 0
         ];
