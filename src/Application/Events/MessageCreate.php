@@ -47,6 +47,15 @@ class MessageCreate
             $mentionId = $mentionMatches[1];
 
             if ($mentionId == $_ENV['BOT_ID']) {
+                if (in_array($message->author->id, explode(',', $_ENV['MENTIONS_BAN_LIST']))) {
+                    $message->channel->sendMessage(
+                        MessageBuilder::new()->setContent(
+                            sprintf('<@%s>, %s', $message->author->id, 'não falo com lixo!')
+                        )
+                    );
+                    return;
+                }
+
                 if (!$this->redisHelper->cooldown('cooldown:botmention:' . $message->author->id, 180, 3)) {
                     $message->channel->sendMessage(
                         MessageBuilder::new()->setContent(
@@ -60,15 +69,6 @@ class MessageCreate
                     $message->channel->sendMessage(
                         MessageBuilder::new()->setContent(
                             sprintf('<@%s>, %s', $message->author->id, 'fala menos porra!')
-                        )
-                    );
-                    return;
-                }
-
-                if (in_array($message->author->id, explode(',', $_ENV['MENTIONS_BAN_LIST']))) {
-                    $message->channel->sendMessage(
-                        MessageBuilder::new()->setContent(
-                            sprintf('<@%s>, %s', $message->author->id, 'não falo com lixo!')
                         )
                     );
                     return;
