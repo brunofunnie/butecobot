@@ -50,7 +50,7 @@ class MessageCreate
                 if (!$this->redisHelper->cooldown('cooldown:botmention:' . $message->author->id, 180, 3)) {
                     $message->channel->sendMessage(
                         MessageBuilder::new()->setContent(
-                            sprintf('<@%s>, %s', $message->author->id, 'que é carai?')
+                            sprintf('<@%s>, %s', $message->author->id, 'que é carai? Já falei demais contigo!')
                         )
                     );
                     return;
