@@ -124,11 +124,11 @@ class CreateCommand extends Command
         $messages = [
             [
                 "role" => "system",
-                "content" => "Using just a few words create a name for a roulette event in portuguese brazilian! You can use themes like technology, programming, games, movies, beer, music, food"
+                "content" => "Usando o prefixo Roleta crie um nome com no máximo 5 palavras de forma engracada e criativa! Use quaisquer temas que desejar e seja o mais aleatório possível!"
             ],
             [
                 "role" => "user",
-                "content" => "Crie o nome para um evento de roleta, 1 frase pequena"
+                "content" => "Crie o nome para um evento de roleta, com no máximo 5 palavras, me surpreenda!"
             ],
         ];
         $body = [

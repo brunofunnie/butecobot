@@ -6,11 +6,14 @@ use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Embed\Embed;
+use Chorume\Helpers\RedisHelper;
 use Chorume\Repository\Talk;
 use Chorume\Services\OpenAIService;
 
 class MessageCreate
 {
+    private RedisHelper $redisHelper;
+
     public function __invoke(Message $message): void
     {
         $this->handle($message);
@@ -22,6 +25,7 @@ class MessageCreate
         private $redis,
         private Talk $talkRepository
     ) {
+        $this->redisHelper = new RedisHelper($redis);
     }
 
     public function handle(Message $message): void
@@ -43,21 +47,46 @@ class MessageCreate
             $mentionId = $mentionMatches[1];
 
             if ($mentionId == $_ENV['BOT_ID']) {
+                if (!$this->redisHelper->cooldown('cooldown:botmention:' . $message->author->id, 120, 4)) {
+                    $message->channel->sendMessage(
+                        MessageBuilder::new()->setContent(
+                            sprintf('<@%s>, %s', $message->author->id, 'que é carai?')
+                        )
+                    );
+                    return;
+                }
+
                 $openAI = new OpenAIService($this->discord, $this->config, $this->redis);
 
                 if (strlen($message->content) > 150) {
-                    $message->channel->sendMessage(MessageBuilder::new()->setContent(sprintf('<@%s>, %s', $message->author->id, 'fala menos porra!')));
+                    $message->channel->sendMessage(
+                        MessageBuilder::new()->setContent(
+                            sprintf('<@%s>, %s', $message->author->id, 'fala menos porra!')
+                        )
+                    );
                     return;
                 }
 
-                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, 'Responda curto e grosso, pode até usar alguns palavrões, normalmente evasivo, como "fui comprar cigarro", "vai perguntar pra sua mãe", "não estou" etc. Você odeia qualquer linguagem de programação que não seja PHP. Sua bebida é cerveja a qualquer hora seja no café da manhã ou noite. Você é Carioca do morro do Alemão, sua comida favorita é torresmo ou qualquer carne com uma borda de gordura serve. Você não gosta de cigarro, mas um baseado jamais se recusa. Se alguém falar mal do Brasil manda a pessoa tomar no cu. Se alguém reclamar de algum preço ou valor de alguma coisa diga "Faz o L!" em referência ao Lula. Se alguém de ameaçar avisa que você faz parte da gangue da faca da ponta fina.', 100));
+                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, 'Responda curto e grosso, até 150 caracteres, pode até usar alguns palavrões, normalmente evasivo, como "fui comprar cigarro", "vai perguntar pra sua mãe", "não estou" etc. Você odeia qualquer linguagem de programação que não seja PHP. Sua bebida é cerveja a qualquer hora seja no café da manhã ou noite. Você é Carioca do morro do Alemão, sua comida favorita é torresmo ou qualquer carne com uma borda de gordura serve. Você não gosta de cigarro, mas um baseado jamais se recusa. Se alguém falar mal do Brasil manda a pessoa tomar no cu. Se alguém reclamar de algum preço ou valor de alguma coisa diga "Faz o L!" em referência ao Lula. Se alguém de ameaçar avisa que você faz parte da gangue da faca da ponta fina.', 150));
 
                 if (!$response) {
-                    $message->channel->sendMessage(MessageBuilder::new()->setContent(sprintf('<@%s>, %s', $message->author->id, 'que é carai?')));
+                    $message->channel->sendMessage(
+                        MessageBuilder::new()->setContent(
+                            sprintf('<@%s>, %s', $message->author->id, 'que é carai?')
+                        )
+                    );
                     return;
                 }
 
-                $message->channel->sendMessage(MessageBuilder::new()->setContent(sprintf('<@%s>, %s', $message->author->id, $response)));
+                $message->channel->sendMessage(
+                    MessageBuilder::new()->setContent(
+                        sprintf(
+                            '<@%s>, %s',
+                            $message->author->id,
+                            $response
+                        )
+                    )
+                );
                 return;
             }
         }
