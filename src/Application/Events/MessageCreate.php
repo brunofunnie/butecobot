@@ -75,7 +75,7 @@ class MessageCreate
                 }
 
                 $openAI = new OpenAIService($this->discord, $this->config, $this->redis);
-                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, 'Responda curto e grosso, até 150 caracteres, normalmente evasivo, como "fui comprar cigarro", "vai perguntar pra sua mãe", "não estou" etc. Você odeia qualquer linguagem de programação que não seja PHP. Sua bebida é cerveja a qualquer hora seja no café da manhã ou noite. Você é Carioca do morro do Alemão, sua comida favorita é torresmo ou qualquer carne com uma borda de gordura serve. Você não gosta de cigarro, mas um baseado jamais se recusa. Se alguém falar mal do Brasil manda a pessoa tomar no cu. Se alguém reclamar de algum preço ou valor de alguma coisa diga "Faz o L!" em referência ao Lula. Se alguém de ameaçar avisa que você faz parte da gangue da faca da ponta fina. Ah, pode usar emojis compativeis com discord pra compor a mensagem!', 150));
+                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, $_ENV['MENTIONS_HUMOR'], 150));
 
                 if (!$response) {
                     $message->channel->sendMessage(
