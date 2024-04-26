@@ -147,6 +147,8 @@ class CreateCommand extends Command
             $response = $client->send($request);
             $data = json_decode($response->getBody()->getContents());
 
+            var_dump($data);
+
             if (count($data->choices) > 0) {
                 return str_replace(['"', "'"], "", $data->choices[0]->message->content);
             }
@@ -154,6 +156,8 @@ class CreateCommand extends Command
             return 'Roleta do Chorume';
         } catch (\Exception $e) {
             $this->discord->getLogger()->error($e->getMessage());
+
+            return "Roleta do Chorume";
         }
     }
 }
