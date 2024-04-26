@@ -49,7 +49,6 @@ class CreateCommand extends Command
             return;
         }
 
-
         if (empty($interaction->data->options['criar']->options['nome'])) {
             $rouletteName = $this->makeRouletteName();
         } else {
@@ -112,7 +111,7 @@ class CreateCommand extends Command
         $this->rouletteBuilder->build($interaction, $rouletteId);
     }
 
-    private function makeRouletteName()
+    private function makeRouletteName(): string
     {
         $client = new HttpClient([
             'exceptions' => true,
@@ -152,7 +151,7 @@ class CreateCommand extends Command
                 return str_replace(['"', "'"], "", $data->choices[0]->message->content);
             }
 
-            return null;
+            return 'Roleta do Chorume';
         } catch (\Exception $e) {
             $this->discord->getLogger()->error($e->getMessage());
         }
