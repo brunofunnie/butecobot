@@ -42,6 +42,6 @@ RUN chown -R raft:raft /app && chmod -R 755 /app
 COPY confs/php/ini/* /usr/local/etc/php/conf.d/
 COPY confs/php/fpm/* /usr/local/etc/php-fpm.d/
 COPY confs/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY --chmod=777 ../confs/entrypoint.sh /entrypoint.sh
+COPY confs/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
