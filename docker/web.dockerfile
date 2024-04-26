@@ -1,6 +1,7 @@
 FROM php:8.2.9-fpm
 
 ARG WWWGROUP
+ARG DOCKER_BUILDKIT=1
 
 ENV DEBIAN_FRONTEND noninteractive
 
