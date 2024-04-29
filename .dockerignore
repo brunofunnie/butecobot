@@ -1,0 +1,3 @@
+app/vendor/**/*
+app/logs/**/*
+app/storage/**/*

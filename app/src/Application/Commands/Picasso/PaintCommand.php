@@ -127,6 +127,8 @@ class PaintCommand extends Command
             $response = $client->send($request);
             $data = json_decode($response->getBody()->getContents());
 
+            $this->discord->getLogger()->debug('OpenAI Response: ' . json_encode($data));
+
             return $data;
         } catch (\Exception $e) {
 

@@ -1,6 +1,4 @@
-vendor/
-.env
-*.log
-temp_audio/*
-storage/*
-./app_mysql
+app/vendor
+app/.env
+app/logs
+app/storage

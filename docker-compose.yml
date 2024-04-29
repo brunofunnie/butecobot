@@ -1,12 +1,16 @@
 services:
   chorumebot:
     container_name: chorumebot-app
-    image: brunofunnie/chorumebot:latest
-    build:
-      context: ./docker
-      dockerfile: web.dockerfile
+    image: brunofunnie/chorumebot-app:latest
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_DATABASE=${DB_DATABASE:-chorumebot}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-root}
     volumes:
-      - ./:/app
+      - ./app/storage/:/app/storage/
+      - ./app/logs/:/app/logs/
     networks:
       chorumebot:
 

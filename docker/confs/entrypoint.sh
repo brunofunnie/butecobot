@@ -10,6 +10,8 @@ fi
 
 chmod -R ugo+rw /.composer
 
+/app/vendor/bin/phinx migrate -e $ENVIRONMENT -c /app/phinx.php
+
 if [ $# -gt 0 ]; then
     exec gosu $WWWUSER "$@"
 else
