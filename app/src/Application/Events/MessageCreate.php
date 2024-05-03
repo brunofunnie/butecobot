@@ -59,13 +59,13 @@ class MessageCreate
                 if (!$this->redisHelper->cooldown('cooldown:botmention:' . $message->author->id, 180, 3)) {
                     $message->channel->sendMessage(
                         MessageBuilder::new()->setContent(
-                            sprintf('<@%s>, %s', $message->author->id, 'que é carai? Já falei demais contigo!')
+                            sprintf('<@%s>, %s', $message->author->id, 'que é carai? Vai dar nó em pingo d\'agua!')
                         )
                     );
                     return;
                 }
 
-                if (strlen($message->content) > 150) {
+                if (strlen($message->content) > 100) {
                     $message->channel->sendMessage(
                         MessageBuilder::new()->setContent(
                             sprintf('<@%s>, %s', $message->author->id, 'fala menos porra!')
@@ -75,7 +75,7 @@ class MessageCreate
                 }
 
                 $openAI = new OpenAIService($this->discord, $this->config, $this->redis);
-                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, $_ENV['MENTIONS_HUMOR'], 150));
+                $response = str_replace(["'", '"'], "", $openAI->askGPT($message->content, $_ENV['MENTIONS_HUMOR'], 100));
 
                 if (!$response) {
                     $message->channel->sendMessage(
