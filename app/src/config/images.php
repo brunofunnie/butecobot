@@ -20,7 +20,7 @@ return [
         ],
         'place_bet' => 'https://chorume.tech/imgs/chorumebot/placebet.gif?v0.0.1',
         'top_forbes' => 'https://chorume.tech/imgs/chorumebot/forbes_chorume.png?v0.0.2',
-        'top_forbes_rectangular' => 'https://chorume.tech/imgs/chorumebot/forbes_chorume_rectangular.png?v0.0.1',
+        'top_forbes_rectangular' => 'https://chorume.tech/imgs/chorumebot/forbes_chorume_rectangular.png?v0.0.2',
         'master' => 'https://chorume.tech/imgs/chorumebot/master.gif?v0.0.1',
         'typer' => 'https://chorume.tech/imgs/chorumebot/typer.gif?v0.0.1',
         'gonna_press' => 'https://chorume.tech/imgs/chorumebot/gonna-press.gif?v0.0.1',
