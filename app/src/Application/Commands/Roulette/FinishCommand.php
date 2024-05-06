@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Commands\Roulette;
+namespace ButecoBot\Application\Commands\Roulette;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
@@ -8,12 +8,12 @@ use Discord\Builders\MessageBuilder;
 use Discord\Parts\Embed\Embed;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Voice\VoiceClient;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Images\RouletteFinishImage;
-use Chorume\Repository\Roulette;
-use Chorume\Repository\RouletteBet;
-use Chorume\Repository\User;
-use function Chorume\Helpers\find_role_array;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Images\RouletteFinishImage;
+use ButecoBot\Repository\Roulette;
+use ButecoBot\Repository\RouletteBet;
+use ButecoBot\Repository\User;
+use function ButecoBot\Helpers\find_role_array;
 
 class FinishCommand extends Command
 {

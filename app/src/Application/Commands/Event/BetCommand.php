@@ -1,16 +1,16 @@
 <?php
 
-namespace Chorume\Application\Commands\Event;
+namespace ButecoBot\Application\Commands\Event;
 
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Parts\Embed\Embed;
-use Chorume\Application\Commands\Command;
-use Chorume\Repository\User;
-use Chorume\Repository\Event;
-use Chorume\Repository\EventBet;
-use Chorume\Application\Discord\MessageComposer;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\Event;
+use ButecoBot\Repository\EventBet;
+use ButecoBot\Application\Discord\MessageComposer;
 
 class BetCommand extends Command
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Repository;
+namespace ButecoBot\Repository;
 
 class User extends Repository
 {

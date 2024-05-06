@@ -1,4 +1,4 @@
-FROM brunofunnie/chorumebot-php:latest
+FROM brunofunnie/butecobot-php:latest
 
 WORKDIR /app
 

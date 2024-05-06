@@ -1,16 +1,16 @@
 <?php
 
-namespace Chorume\Application\Commands\Generic;
+namespace ButecoBot\Application\Commands\Generic;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Parts\Embed\Embed;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Repository\User;
-use Chorume\Repository\UserCoinHistory;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\UserCoinHistory;
 
 class TransferCommand extends Command
 {
@@ -53,7 +53,7 @@ class TransferCommand extends Command
             $interaction->respondWithMessage(
                 $this->messageComposer->embed(
                     'Conta nova',
-                    'Sua conta no Chorume Coins precisa ter mais de 15 dias para transferir coins',
+                    'Sua conta no ButecoBot Coins precisa ter mais de 15 dias para transferir coins',
                 ),
                 true
             );

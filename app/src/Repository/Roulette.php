@@ -1,10 +1,10 @@
 <?php
 
-namespace Chorume\Repository;
+namespace ButecoBot\Repository;
 
-use Chorume\Repository\RouletteBet;
-use Chorume\Repository\User;
-use Chorume\Repository\UserCoinHistory;
+use ButecoBot\Repository\RouletteBet;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\UserCoinHistory;
 
 class Roulette extends Repository
 {

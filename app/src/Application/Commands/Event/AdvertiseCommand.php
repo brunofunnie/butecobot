@@ -1,16 +1,16 @@
 <?php
 
-namespace Chorume\Application\Commands\Event;
+namespace ButecoBot\Application\Commands\Event;
 
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Parts\Embed\Embed;
 use Discord\Voice\VoiceClient;
-use Chorume\Application\Commands\Command;
-use Chorume\Repository\Event;
-use Chorume\Repository\EventChoice;
-use Chorume\Application\Discord\MessageComposer;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Repository\Event;
+use ButecoBot\Repository\EventChoice;
+use ButecoBot\Application\Discord\MessageComposer;
 
 class AdvertiseCommand extends Command
 {

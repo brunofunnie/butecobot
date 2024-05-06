@@ -1,8 +1,8 @@
 <?php
 
-namespace Chorume\Application\Events;
+namespace ButecoBot\Application\Events;
 
-use Chorume\Repository\User;
+use ButecoBot\Repository\User;
 use Discord\Discord;
 use Discord\Parts\WebSockets\VoiceStateUpdate as WebSocketsVoiceStateUpdate;
 

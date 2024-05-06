@@ -1,17 +1,17 @@
 <?php
 
-namespace Chorume\Application\Commands\Roulette;
+namespace ButecoBot\Application\Commands\Roulette;
 
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
-use Chorume\Application\Commands\Command;
-use Chorume\Repository\Roulette;
-use Chorume\Repository\RouletteBet;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Repository\Roulette;
+use ButecoBot\Repository\RouletteBet;
 use Discord\Parts\Embed\Embed;
 use Discord\Builders\Components\Button;
 use Discord\Builders\Components\ActionRow;
-use Chorume\Repository\User;
+use ButecoBot\Repository\User;
 use Predis\Client as RedisClient;
 
 class CloseCommand extends Command

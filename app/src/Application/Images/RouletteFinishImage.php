@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Images;
+namespace ButecoBot\Application\Images;
 
 use Intervention\Image\ImageManager;
 use Intervention\Image\Typography\FontFactory;

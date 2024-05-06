@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Helpers;
+namespace ButecoBot\Helpers;
 
 if (!function_exists('format_money')) {
     function format_money($amount) {

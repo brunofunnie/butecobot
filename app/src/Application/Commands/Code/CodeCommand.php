@@ -1,13 +1,13 @@
 <?php
 
-namespace Chorume\Application\Commands\Code;
+namespace ButecoBot\Application\Commands\Code;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Parts\Interactions\Interaction;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Helpers\RedisHelper;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Helpers\RedisHelper;
 
 class CodeCommand extends Command
 {
@@ -26,7 +26,7 @@ class CodeCommand extends Command
         $interaction->respondWithMessage(
             $this->messageComposer->embed(
                 'Aí manolo o código do bot tá aqui ó, não palpite, commit!',
-                'https://github.com/brunofunnie/chorumebot'
+                'https://github.com/brunofunnie/butecobot'
             ),
         );
     }

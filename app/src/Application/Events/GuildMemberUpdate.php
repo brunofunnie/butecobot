@@ -1,10 +1,10 @@
 <?php
 
-namespace Chorume\Application\Events;
+namespace ButecoBot\Application\Events;
 
 use Discord\Discord;
-use Chorume\Repository\User;
-use Chorume\Repository\UserChangeHistory;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\UserChangeHistory;
 use Discord\Parts\User\Member;
 
 class GuildMemberUpdate

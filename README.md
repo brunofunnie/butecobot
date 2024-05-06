@@ -1,6 +1,6 @@
-# Chorume Bot
+# Buteco Bot
 
-![](https://github.com/brunofunnie/chorumebot/blob/main/docs/images/chorumebot.png?raw=true)
+![](https://github.com/brunofunnie/butecobot/blob/main/docs/images/butecobot.png?raw=true)
 
 This bot was developed using [DiscordPHP](https://github.com/discord-php/DiscordPHP)
 

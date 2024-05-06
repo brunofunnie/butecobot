@@ -16,39 +16,39 @@ use Discord\Parts\Guild\Guild;
 use Discord\Parts\Interactions\Command\Command;
 use Discord\WebSockets\Intents;
 use Discord\WebSockets\Event as DiscordEvent;
-use Chorume\Database\Db;
-use Chorume\Repository\Event;
-use Chorume\Repository\EventChoice;
-use Chorume\Repository\EventBet;
-use Chorume\Repository\Talk;
-use Chorume\Repository\UserCoinHistory;
-use Chorume\Repository\Roulette;
-use Chorume\Repository\RouletteBet;
-use Chorume\Repository\User;
-use Chorume\Repository\UserChangeHistory;
-use Chorume\Application\Commands\Code\CodeCommand;
-use Chorume\Application\Commands\Event\AdvertiseCommand;
-use Chorume\Application\Commands\Event\BetCommand;
-use Chorume\Application\Commands\Event\CloseCommand;
-use Chorume\Application\Commands\Event\CreateCommand;
-use Chorume\Application\Commands\Event\FinishCommand;
-use Chorume\Application\Commands\Event\ListCommand;
-use Chorume\Application\Commands\Generic\CoinsCommand;
-use Chorume\Application\Commands\Generic\TopForbesCommand;
-use Chorume\Application\Commands\Generic\TransferCommand;
-use Chorume\Application\Commands\LittleAirplanes\FlyCommand;
-use Chorume\Application\Commands\Master\AskCommand;
-use Chorume\Application\Commands\Asking\AskingCommand;
-use Chorume\Application\Commands\Picasso\PaintCommand;
-use Chorume\Application\Commands\Roulette\CloseCommand as RouletteCloseCommand;
-use Chorume\Application\Commands\Roulette\CreateCommand as RouletteCreateCommand;
-use Chorume\Application\Commands\Roulette\ExposeCommand as RouletteExposeCommand;
-use Chorume\Application\Commands\Roulette\FinishCommand as RouletteFinishCommand;
-use Chorume\Application\Commands\Roulette\ListCommand as RouletteListCommand;
-use Chorume\Application\Commands\Test\TestCommand;
-use Chorume\Application\Events\MessageCreate;
-use Chorume\Application\Events\GuildMemberUpdate;
-use Chorume\Application\Events\VoiceStateUpdate;
+use ButecoBot\Database\Db;
+use ButecoBot\Repository\Event;
+use ButecoBot\Repository\EventChoice;
+use ButecoBot\Repository\EventBet;
+use ButecoBot\Repository\Talk;
+use ButecoBot\Repository\UserCoinHistory;
+use ButecoBot\Repository\Roulette;
+use ButecoBot\Repository\RouletteBet;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\UserChangeHistory;
+use ButecoBot\Application\Commands\Code\CodeCommand;
+use ButecoBot\Application\Commands\Event\AdvertiseCommand;
+use ButecoBot\Application\Commands\Event\BetCommand;
+use ButecoBot\Application\Commands\Event\CloseCommand;
+use ButecoBot\Application\Commands\Event\CreateCommand;
+use ButecoBot\Application\Commands\Event\FinishCommand;
+use ButecoBot\Application\Commands\Event\ListCommand;
+use ButecoBot\Application\Commands\Generic\CoinsCommand;
+use ButecoBot\Application\Commands\Generic\TopCeosCommand;
+use ButecoBot\Application\Commands\Generic\TransferCommand;
+use ButecoBot\Application\Commands\LittleAirplanes\FlyCommand;
+use ButecoBot\Application\Commands\Master\AskCommand;
+use ButecoBot\Application\Commands\Asking\AskingCommand;
+use ButecoBot\Application\Commands\Picasso\PaintCommand;
+use ButecoBot\Application\Commands\Roulette\CloseCommand as RouletteCloseCommand;
+use ButecoBot\Application\Commands\Roulette\CreateCommand as RouletteCreateCommand;
+use ButecoBot\Application\Commands\Roulette\ExposeCommand as RouletteExposeCommand;
+use ButecoBot\Application\Commands\Roulette\FinishCommand as RouletteFinishCommand;
+use ButecoBot\Application\Commands\Roulette\ListCommand as RouletteListCommand;
+use ButecoBot\Application\Commands\Test\TestCommand;
+use ButecoBot\Application\Events\MessageCreate;
+use ButecoBot\Application\Events\GuildMemberUpdate;
+use ButecoBot\Application\Events\VoiceStateUpdate;
 
 $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -75,11 +75,11 @@ $redis = new RedisClient([
     'port' => 6379,
 ]);
 
-$logger = new Monolog('ChorumeCoins');
+$logger = new Monolog('ButecoBotCoins');
 
 if (getenv('ENVIRONMENT') === 'production') {
     $rotatingHandler = new RotatingFileHandler(
-        __DIR__ . '/../logs/chorumebot.log',
+        __DIR__ . '/../logs/butecobot.log',
         0,
         Level::fromName(getenv('LOG_LEVEL')),
         true,
@@ -202,7 +202,7 @@ $discord->listenCommand('perguntar', new AskingCommand($discord, $config, $redis
 $discord->listenCommand('picasso', new PaintCommand($discord, $config, $redis, $userRepository, $userCoinHistoryRepository));
 $discord->listenCommand('avioeszinhos', new FlyCommand($discord, $config, $redis, $userRepository, $userCoinHistoryRepository));
 $discord->listenCommand('transferir', new TransferCommand($discord, $config, $redis, $userRepository, $userCoinHistoryRepository));
-$discord->listenCommand(['top', 'forbes'], new TopForbesCommand($discord, $config, $redis, $userRepository, $userCoinHistoryRepository));
+$discord->listenCommand(['top', 'patroes'], new TopCeosCommand($discord, $config, $redis, $userRepository, $userCoinHistoryRepository));
 $discord->listenCommand(['evento', 'anunciar'], new AdvertiseCommand($discord, $config, $eventRepository, $eventChoiceRepository));
 $discord->listenCommand('apostar', new BetCommand($discord, $config, $userRepository, $eventRepository, $eventBetsRepository));
 $discord->listenCommand(['evento', 'criar'], new CreateCommand($discord, $config, $eventRepository));

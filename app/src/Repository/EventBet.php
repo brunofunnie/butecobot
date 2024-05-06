@@ -1,11 +1,11 @@
 <?php
 
-namespace Chorume\Repository;
+namespace ButecoBot\Repository;
 
-use Chorume\Repository\User;
-use Chorume\Repository\Event;
-use Chorume\Repository\EventChoice;
-use Chorume\Repository\UserCoinHistory;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\Event;
+use ButecoBot\Repository\EventChoice;
+use ButecoBot\Repository\UserCoinHistory;
 
 class EventBet extends Repository
 {

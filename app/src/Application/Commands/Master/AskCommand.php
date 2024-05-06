@@ -1,15 +1,15 @@
 <?php
 
-namespace Chorume\Application\Commands\Master;
+namespace ButecoBot\Application\Commands\Master;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Parts\Interactions\Interaction;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Helpers\RedisHelper;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Helpers\RedisHelper;
 
 class AskCommand extends Command
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Chorume\Application\Commands\Event;
+namespace ButecoBot\Application\Commands\Event;
 
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
-use Chorume\Application\Commands\Command;
-use Chorume\Repository\Event;
-use Chorume\Application\Discord\MessageComposer;
-use function Chorume\Helpers\find_role_array;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Repository\Event;
+use ButecoBot\Application\Discord\MessageComposer;
+use function ButecoBot\Helpers\find_role_array;
 
 class CreateCommand extends Command
 {

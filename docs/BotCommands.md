@@ -1,5 +1,5 @@
 
-#  Chorume Bot
+#  Buteco Bot
 
 ⬅ [Back to README.md](../README.md)
 

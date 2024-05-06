@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Services;
+namespace ButecoBot\Services;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;

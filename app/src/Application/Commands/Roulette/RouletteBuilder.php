@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Commands\Roulette;
+namespace ButecoBot\Application\Commands\Roulette;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
@@ -9,12 +9,12 @@ use Discord\Builders\Components\ActionRow;
 use Discord\Builders\Components\Button;
 use Discord\Parts\Embed\Embed;
 use Discord\Parts\Interactions\Interaction;
-use Chorume\Application\Commands\Roulette\Entities\GameData;
-use Chorume\Application\Commands\Roulette\Entities\Player;
-use Chorume\Application\Commands\Roulette\FinishCommand;
-use Chorume\Repository\Roulette;
-use Chorume\Repository\RouletteBet;
-use Chorume\Repository\User;
+use ButecoBot\Application\Commands\Roulette\Entities\GameData;
+use ButecoBot\Application\Commands\Roulette\Entities\Player;
+use ButecoBot\Application\Commands\Roulette\FinishCommand;
+use ButecoBot\Repository\Roulette;
+use ButecoBot\Repository\RouletteBet;
+use ButecoBot\Repository\User;
 
 class RouletteBuilder
 {

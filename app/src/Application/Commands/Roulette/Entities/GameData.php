@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Commands\Roulette\Entities;
+namespace ButecoBot\Application\Commands\Roulette\Entities;
 
 class GameData
 {

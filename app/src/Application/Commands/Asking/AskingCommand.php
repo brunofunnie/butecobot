@@ -1,10 +1,10 @@
 <?php
 
-namespace Chorume\Application\Commands\Asking;
+namespace ButecoBot\Application\Commands\Asking;
 
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Helpers\RedisHelper;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Helpers\RedisHelper;
 use Discord\Builders\MessageBuilder;
 use Discord\Discord;
 use Discord\Parts\Interactions\Interaction;

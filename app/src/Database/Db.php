@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Database;
+namespace ButecoBot\Database;
 
 use PDO;
 use PDOException;

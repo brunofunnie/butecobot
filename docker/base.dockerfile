@@ -1,4 +1,5 @@
-FROM php:8.2.9-fpm
+ARG ARCH=
+FROM ${ARCH}php:8.2.9-fpm
 
 ARG WWWGROUP
 ENV DEBIAN_FRONTEND noninteractive

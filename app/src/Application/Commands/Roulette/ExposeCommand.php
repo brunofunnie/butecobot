@@ -1,15 +1,15 @@
 <?php
 
-namespace Chorume\Application\Commands\Roulette;
+namespace ButecoBot\Application\Commands\Roulette;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Parts\Interactions\Interaction;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Commands\Roulette\RouletteBuilder;
-use Chorume\Repository\Roulette;
-use Chorume\Repository\RouletteBet;
-use Chorume\Repository\User;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Commands\Roulette\RouletteBuilder;
+use ButecoBot\Repository\Roulette;
+use ButecoBot\Repository\RouletteBet;
+use ButecoBot\Repository\User;
 
 class ExposeCommand extends Command
 {

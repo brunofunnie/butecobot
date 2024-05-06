@@ -1,19 +1,20 @@
 <?php
 
-namespace Chorume\Application\Commands\Generic;
+namespace ButecoBot\Application\Commands\Generic;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Parts\Embed\Embed;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Repository\User;
-use Chorume\Repository\UserCoinHistory;
-use function Chorume\Helpers\format_money;
+use Discord\Parts\Channel\Attachment;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\UserCoinHistory;
+use function ButecoBot\Helpers\format_money;
 
-class TopForbesCommand extends Command
+class TopCeosCommand extends Command
 {
     private MessageComposer $messageComposer;
 
@@ -30,7 +31,7 @@ class TopForbesCommand extends Command
     public function handle(Interaction $interaction): void
     {
         $top10list = $this->userCoinHistoryRepository->listTop10();
-        $topBettersImage = $this->config['images']['top_forbes_rectangular'];
+        $topBettersImage = $this->config['images']['top_ceos_rectangular'];
 
         $users = '';
         $acc = '';
@@ -52,10 +53,10 @@ class TopForbesCommand extends Command
         }
 
         $interaction->respondWithMessage($this->messageComposer->embed(
-            title: 'TOP 10 FORBES',
+            title: 'TOP 10 PATRÕES',
             message: '',
             color: '#F5D920',
-            image: $topBettersImage,
+            image: __DIR__ . '/../../../Assets/Images/mais-ricos.png',
             fields: [
                 ['name' => 'Usuário', 'value' => $users, 'inline' => true],
                 ['name' => 'Acumulado', 'value' => $acc, 'inline' => true],

@@ -1,8 +1,8 @@
 <?php
 
-namespace Chorume\Repository;
+namespace ButecoBot\Repository;
 
-use Chorume\Database\Db;
+use ButecoBot\Database\Db;
 
 abstract class Repository
 {

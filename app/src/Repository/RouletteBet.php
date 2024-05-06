@@ -1,8 +1,8 @@
 <?php
 
-namespace Chorume\Repository;
+namespace ButecoBot\Repository;
 
-use Chorume\Repository\UserCoinHistory;
+use ButecoBot\Repository\UserCoinHistory;
 
 class RouletteBet extends Repository
 {

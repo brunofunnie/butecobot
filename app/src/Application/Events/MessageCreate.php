@@ -1,14 +1,14 @@
 <?php
 
-namespace Chorume\Application\Events;
+namespace ButecoBot\Application\Events;
 
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Embed\Embed;
-use Chorume\Helpers\RedisHelper;
-use Chorume\Repository\Talk;
-use Chorume\Services\OpenAIService;
+use ButecoBot\Helpers\RedisHelper;
+use ButecoBot\Repository\Talk;
+use ButecoBot\Services\OpenAIService;
 
 class MessageCreate
 {

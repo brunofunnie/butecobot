@@ -8,8 +8,8 @@ return [
     'options' => [
         [
             'type' => Option::SUB_COMMAND,
-            'name' => 'forbes',
-            'description' => 'Lista dos mais ricos do servidor',
+            'name' => 'patroes',
+            'description' => 'Lista dos mais ricos do buteco',
         ],
     ]
 ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Commands\Event;
+namespace ButecoBot\Application\Commands\Event;
 
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
@@ -8,10 +8,10 @@ use Discord\Parts\Interactions\Interaction;
 use Discord\Builders\Components\ActionRow;
 use Discord\Builders\Components\Button;
 use Discord\Parts\Embed\Embed;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Repository\Event;
-use Chorume\Repository\EventChoice;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Repository\Event;
+use ButecoBot\Repository\EventChoice;
 
 class ListCommand extends Command
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Discord;
+namespace ButecoBot\Application\Discord;
 
 use Discord\Builders\MessageBuilder;
 use Discord\Discord;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Application\Commands;
+namespace ButecoBot\Application\Commands;
 
 use Discord\Parts\Interactions\Interaction;
 

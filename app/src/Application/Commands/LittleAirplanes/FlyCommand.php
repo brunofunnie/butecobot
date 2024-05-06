@@ -1,18 +1,18 @@
 <?php
 
-namespace Chorume\Application\Commands\LittleAirplanes;
+namespace ButecoBot\Application\Commands\LittleAirplanes;
 
 use Predis\Client as RedisClient;
 use Discord\Discord;
 use Discord\Voice\VoiceClient;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Builders\MessageBuilder;
-use Chorume\Application\Commands\Command;
-use Chorume\Application\Discord\MessageComposer;
-use Chorume\Helpers\RedisHelper;
-use Chorume\Repository\User;
-use Chorume\Repository\UserCoinHistory;
-use function Chorume\Helpers\find_role_array;
+use ButecoBot\Application\Commands\Command;
+use ButecoBot\Application\Discord\MessageComposer;
+use ButecoBot\Helpers\RedisHelper;
+use ButecoBot\Repository\User;
+use ButecoBot\Repository\UserCoinHistory;
+use function ButecoBot\Helpers\find_role_array;
 use Exception;
 
 class FlyCommand extends Command

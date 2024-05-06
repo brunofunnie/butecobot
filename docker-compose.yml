@@ -1,37 +1,37 @@
 services:
-  chorumebot:
-    container_name: chorumebot-app
-    image: brunofunnie/chorumebot-app:latest
+  butecobot:
+    container_name: butecobot-app
+    image: brunofunnie/butecobot-app:latest
     environment:
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - DB_HOST=${DB_HOST:-mysql}
-      - DB_DATABASE=${DB_DATABASE:-chorumebot}
+      - DB_DATABASE=${DB_DATABASE:-butecobot}
       - DB_USERNAME=${DB_USERNAME:-root}
       - DB_PASSWORD=${DB_PASSWORD:-root}
     volumes:
       - ./app/storage/:/app/storage/
       - ./app/logs/:/app/logs/
     networks:
-      chorumebot:
+      butecobot:
 
   mysql:
-    container_name: chorumebot-mysql
+    container_name: butecobot-mysql
     image: mysql:8.1.0
     ports:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=chorumebot
-      - MYSQL_USER=chorumebot
-      - MYSQL_PASSWORD=chorumebot
+      - MYSQL_DATABASE=butecobot
+      - MYSQL_USER=butecobot
+      - MYSQL_PASSWORD=butecobot
     volumes:
       - mysql:/var/lib/mysql
       - ./docker/confs/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
-       chorumebot:
+       butecobot:
 
   pma:
-    container_name: chorumebot-pma
+    container_name: butecobot-pma
     image: phpmyadmin
     ports:
       - 8081:80
@@ -40,10 +40,10 @@ services:
       - MEMORY_LIMIT=2048M
       - UPLOAD_LIMIT=2048M
     networks:
-       chorumebot:
+       butecobot:
 
   redis:
-    container_name: chorumebot-redis
+    container_name: butecobot-redis
     image: redis:7.2.0-alpine
     ports:
       - 6379:6379
@@ -51,10 +51,10 @@ services:
     volumes:
       - redis:/data
     networks:
-       chorumebot:
+       butecobot:
 
   mpit:
-    container_name: chorumebot-mailpit
+    container_name: butecobot-mailpit
     image: axllent/mailpit
     ports:
       - 8025:8025
@@ -62,10 +62,10 @@ services:
     environment:
       - TZ=America/Sao_Paulo
     networks:
-       chorumebot:
+       butecobot:
 
 networks:
-  chorumebot:
+  butecobot:
 
 volumes:
   mysql:

@@ -1,6 +1,6 @@
 <?php
 
-namespace Chorume\Helpers;
+namespace ButecoBot\Helpers;
 
 use Predis\Client as RedisClient;
 
