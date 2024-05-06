@@ -1,3 +1,4 @@
+.DS_Store
 app/vendor
 app/.env
 app/logs

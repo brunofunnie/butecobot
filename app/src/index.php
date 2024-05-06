@@ -182,13 +182,17 @@ $discord->on('init', function (Discord $discord) use ($redis, $config) {
 
     $botStartedAt = date('Y-m-d H:i:s');
 
-    echo "  _______                           ___      __   " . PHP_EOL;
-    echo " / ___/ / ___  ______ ____ _ ___   / _ )___ / /_  " . PHP_EOL;
-    echo "/ /__/ _ / _ \/ __/ // /  ' / -_) / _  / _ / __/  " . PHP_EOL;
-    echo "\___/_//_\___/_/  \_,_/_/_/_\__/ /____/\___\__/   " . PHP_EOL;
-    echo "                                                  " . PHP_EOL;
-    echo "                 Bot is ready!                    " . PHP_EOL;
-    echo "         Started at: $botStartedAt                " . PHP_EOL;
+    echo "███████████              █████                               ███████████            █████    " . PHP_EOL;
+    echo "░░███░░░░░███            ░░███                               ░░███░░░░░███          ░░███    " . PHP_EOL;
+    echo " ░███    ░███ █████ ████ ███████    ██████   ██████   ██████  ░███    ░███  ██████  ███████  " . PHP_EOL;
+    echo " ░██████████ ░░███ ░███ ░░░███░    ███░░███ ███░░███ ███░░███ ░██████████  ███░░███░░░███░   " . PHP_EOL;
+    echo " ░███░░░░░███ ░███ ░███   ░███    ░███████ ░███ ░░░ ░███ ░███ ░███░░░░░███░███ ░███  ░███    " . PHP_EOL;
+    echo " ░███    ░███ ░███ ░███   ░███ ███░███░░░  ░███  ███░███ ░███ ░███    ░███░███ ░███  ░███ ███" . PHP_EOL;
+    echo " ███████████  ░░████████  ░░█████ ░░██████ ░░██████ ░░██████  ███████████ ░░██████   ░░█████ " . PHP_EOL;
+    echo "░░░░░░░░░░░    ░░░░░░░░    ░░░░░   ░░░░░░   ░░░░░░   ░░░░░░  ░░░░░░░░░░░   ░░░░░░     ░░░░░  " . PHP_EOL;
+    echo " Font: DOS Rebel" . PHP_EOL;
+    echo " Bot is ready! " . PHP_EOL;
+    echo " Started at: $botStartedAt " . PHP_EOL;
 });
 
 $discord->on(DiscordEvent::GUILD_MEMBER_UPDATE, new GuildMemberUpdate($discord, $config, $redis, $userRepository, $userChangeHistoryRepository));
