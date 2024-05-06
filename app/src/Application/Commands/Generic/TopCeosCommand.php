@@ -56,7 +56,7 @@ class TopCeosCommand extends Command
             title: 'TOP 10 PATRÕES',
             message: '',
             color: '#F5D920',
-            image: __DIR__ . '/../../../Assets/Images/mais-ricos.png',
+            image: $topBettersImage,
             fields: [
                 ['name' => 'Usuário', 'value' => $users, 'inline' => true],
                 ['name' => 'Acumulado', 'value' => $acc, 'inline' => true],
