@@ -182,6 +182,8 @@ $discord->on('init', function (Discord $discord) use ($redis, $config) {
 
     $botStartedAt = date('Y-m-d H:i:s');
 
+    echo " " . PHP_EOL;
+    echo " " . PHP_EOL;
     echo "███████████              █████                               ███████████            █████    " . PHP_EOL;
     echo "░░███░░░░░███            ░░███                               ░░███░░░░░███          ░░███    " . PHP_EOL;
     echo " ░███    ░███ █████ ████ ███████    ██████   ██████   ██████  ░███    ░███  ██████  ███████  " . PHP_EOL;
@@ -190,9 +192,12 @@ $discord->on('init', function (Discord $discord) use ($redis, $config) {
     echo " ░███    ░███ ░███ ░███   ░███ ███░███░░░  ░███  ███░███ ░███ ░███    ░███░███ ░███  ░███ ███" . PHP_EOL;
     echo " ███████████  ░░████████  ░░█████ ░░██████ ░░██████ ░░██████  ███████████ ░░██████   ░░█████ " . PHP_EOL;
     echo "░░░░░░░░░░░    ░░░░░░░░    ░░░░░   ░░░░░░   ░░░░░░   ░░░░░░  ░░░░░░░░░░░   ░░░░░░     ░░░░░  " . PHP_EOL;
+    echo " " . PHP_EOL;
     echo " Font: DOS Rebel" . PHP_EOL;
     echo " Bot is ready! " . PHP_EOL;
     echo " Started at: $botStartedAt " . PHP_EOL;
+    echo " " . PHP_EOL;
+    echo " " . PHP_EOL;
 });
 
 $discord->on(DiscordEvent::GUILD_MEMBER_UPDATE, new GuildMemberUpdate($discord, $config, $redis, $userRepository, $userChangeHistoryRepository));
